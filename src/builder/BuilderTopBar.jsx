@@ -46,7 +46,7 @@ import {
 import { logout } from "../store/authSlice";
 import { UserIcon, PowerIcon } from "@heroicons/react/24/outline";
 
-const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
+const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
   const { currentWebsite, currentPage, pages, deviceView, history, future } =
     useSelector((state) => state.builder);
   const { user } = useSelector((state) => state.auth);
@@ -240,19 +240,26 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
             variant="text"
             size="sm"
             onClick={() => setIsPreview(!isPreview)}
-            className={`rounded-xl font-bold px-5 py-2.5 normal-case transition-all flex items-center gap-2 border ${isPreview ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" : "text-gray-600 border-transparent hover:bg-gray-50 hover:border-gray-200"}`}
+            className={`min-w-[130px] rounded-xl font-bold px-4 py-2.5 normal-case transition-all flex items-center justify-center gap-2 border ${isPreview ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" : "text-gray-600 border-transparent hover:bg-gray-50 hover:border-gray-200"}`}
           >
-            <EyeIcon className="h-5 w-5" /> {isPreview ? "Edit" : "Preview"}
+            <EyeIcon className="h-5 w-5 shrink-0" />{" "}
+            {isPreview ? "Edit Design" : "Preview"}
           </Button>
           <Button
             onClick={onSave}
             size="sm"
-            className="bg-indigo-600 rounded-xl px-6 py-3 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 normal-case font-black text-xs tracking-widest transition-all flex items-center gap-2 transform active:scale-95"
+            disabled={isSaving}
+            className={`min-w-[130px] bg-indigo-600 rounded-xl px-4 py-3 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 normal-case font-black text-xs tracking-widest transition-all flex items-center justify-center gap-2 transform ${isSaving ? "opacity-80 cursor-wait" : "active:scale-95"}`}
           >
-            <RocketLaunchIcon className="h-4 w-4" /> Publish
+            {isSaving ? (
+              <div className="h-4 w-4 border-2 border-white/40 border-t-white rounded-full animate-spin shrink-0"></div>
+            ) : (
+              <RocketLaunchIcon className="h-4 w-4 shrink-0" />
+            )}
+            {isSaving ? "Saving..." : "Publish"}
           </Button>
 
-          <div className="h-8 w-px bg-gray-100 mx-2"></div>
+          <div className="h-8 w-px bg-gray-100 mx-1"></div>
 
           <Menu placement="bottom-end">
             <MenuHandler>

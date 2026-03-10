@@ -17,6 +17,51 @@ const Builder = () => {
   const { currentWebsite, currentPage } = useSelector((state) => state.builder);
   const [isLoading, setIsLoading] = useState(true);
   const [isPreview, setIsPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedLayoutStr, setLastSavedLayoutStr] = useState(null);
+
+  // Debounced Auto-Save
+  useEffect(() => {
+    if (!currentPage || !currentWebsite) return;
+
+    const currentLayoutStr = JSON.stringify(currentPage.layout);
+
+    // Initialize the last saved string on first load to prevent immediate auto-save
+    if (lastSavedLayoutStr === null) {
+      setLastSavedLayoutStr(currentLayoutStr);
+      return;
+    }
+
+    // Don't auto-save if layout hasn't changed
+    if (lastSavedLayoutStr === currentLayoutStr) return;
+
+    const saveTimer = setTimeout(async () => {
+      try {
+        setIsSaving(true);
+        const config = {
+          headers: { Authorization: `Bearer ${user.token}` },
+        };
+
+        await axios.put(
+          `http://localhost:5000/api/pages/${currentPage._id}`,
+          {
+            layout: currentPage.layout,
+            name: currentPage.name,
+            slug: currentPage.slug,
+          },
+          config
+        );
+
+        setLastSavedLayoutStr(currentLayoutStr);
+      } catch (error) {
+        console.error("Auto-save failed:", error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, 1000); // 1000ms debounce
+
+    return () => clearTimeout(saveTimer);
+  }, [currentPage, currentWebsite, user.token, lastSavedLayoutStr]);
 
   useEffect(() => {
     const fetchWebsite = async () => {
@@ -98,6 +143,7 @@ const Builder = () => {
         onSave={saveWebsite}
         isPreview={isPreview}
         setIsPreview={setIsPreview}
+        isSaving={isSaving}
       />
       <div className="flex flex-1 overflow-hidden relative">
         {!isPreview && <LeftPanel />}

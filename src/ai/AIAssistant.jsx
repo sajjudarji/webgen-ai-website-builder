@@ -79,70 +79,71 @@ const AIAssistant = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100]">
-      {!isOpen ? (
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 rounded-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl hover:scale-105 transition-transform"
-        >
-          <SparklesIcon className="h-5 w-5" /> AI Assistant
-        </Button>
-      ) : (
-        <Card className="w-80 shadow-2xl border">
-          <div className="p-4 border-b flex items-center justify-between bg-blue-50/50 rounded-t-xl">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-blue-500 rounded-lg text-white">
-                <SparklesIcon className="h-4 w-4" />
-              </div>
-              <Typography variant="h6" color="blue-gray" className="text-sm">
-                AI Site Designer
-              </Typography>
-            </div>
-            <IconButton
-              variant="text"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </IconButton>
-          </div>
-          <CardBody className="p-4">
-            <Typography
-              variant="small"
-              color="gray"
-              className="mb-4 text-xs italic"
-            >
-              "Create a services section with 3 columns" or "Generate a hero
-              section for a bakery"
-            </Typography>
-            <div className="flex flex-col gap-4">
-              <Input
-                label="What should I build?"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                autoFocus
-              />
-              <Button
-                color="blue"
-                fullWidth
-                className="flex items-center justify-center gap-2"
-                onClick={handleGenerate}
-                disabled={isGenerating || !prompt}
-              >
-                {isGenerating ? (
-                  "Generating..."
-                ) : (
-                  <>
-                    <PaperAirplaneIcon className="h-4 w-4 -rotate-45" /> Create
-                    Section
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      )}
-    </div>
+    <></>
+    // <div className="fixed bottom-8 right-8 z-[100]">
+    //   {!isOpen ? (
+    //     <Button
+    //       onClick={() => setIsOpen(true)}
+    //       className="flex items-center gap-2 rounded-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl hover:scale-105 transition-transform"
+    //     >
+    //       <SparklesIcon className="h-5 w-5" /> AI Assistant
+    //     </Button>
+    //   ) : (
+    //     <Card className="w-80 shadow-2xl border">
+    //       <div className="p-4 border-b flex items-center justify-between bg-blue-50/50 rounded-t-xl">
+    //         <div className="flex items-center gap-2">
+    //           <div className="p-1.5 bg-blue-500 rounded-lg text-white">
+    //             <SparklesIcon className="h-4 w-4" />
+    //           </div>
+    //           <Typography variant="h6" color="blue-gray" className="text-sm">
+    //             AI Site Designer
+    //           </Typography>
+    //         </div>
+    //         <IconButton
+    //           variant="text"
+    //           size="sm"
+    //           onClick={() => setIsOpen(false)}
+    //         >
+    //           <XMarkIcon className="h-5 w-5" />
+    //         </IconButton>
+    //       </div>
+    //       <CardBody className="p-4">
+    //         <Typography
+    //           variant="small"
+    //           color="gray"
+    //           className="mb-4 text-xs italic"
+    //         >
+    //           "Create a services section with 3 columns" or "Generate a hero
+    //           section for a bakery"
+    //         </Typography>
+    //         <div className="flex flex-col gap-4">
+    //           <Input
+    //             label="What should I build?"
+    //             value={prompt}
+    //             onChange={(e) => setPrompt(e.target.value)}
+    //             autoFocus
+    //           />
+    //           <Button
+    //             color="blue"
+    //             fullWidth
+    //             className="flex items-center justify-center gap-2"
+    //             onClick={handleGenerate}
+    //             disabled={isGenerating || !prompt}
+    //           >
+    //             {isGenerating ? (
+    //               "Generating..."
+    //             ) : (
+    //               <>
+    //                 <PaperAirplaneIcon className="h-4 w-4 -rotate-45" /> Create
+    //                 Section
+    //               </>
+    //             )}
+    //           </Button>
+    //         </div>
+    //       </CardBody>
+    //     </Card>
+    //   )}
+    // </div>
   );
 };
 
