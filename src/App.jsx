@@ -19,6 +19,10 @@ import ProjectSettings from "./pages/ProjectSettings";
 import Landing from "./pages/Landing";
 import Analytics from "./pages/Analytics";
 import MyWebsites from "./pages/MyWebsites";
+import AIPromptBuilder from "./pages/AIPromptBuilder";
+import About from "./pages/About";
+import Pricing from "./pages/Pricing";
+import Help from "./pages/Help";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -33,7 +37,7 @@ const ProtectedRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
   if (!user || user.role !== "admin") {
-    return <Navigate to="/" />;
+    return <Navigate to="/dashboard" />;
   }
   return children;
 };
@@ -52,7 +56,18 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        {/* <Route path="/" element={<Landing />} /> */}
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Landing />
+            </PublicRoute>
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/help" element={<Help />} />
+
         <Route
           path="/login"
           element={
@@ -72,7 +87,7 @@ function App() {
 
         {/* Protected Routes */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
@@ -137,7 +152,7 @@ function App() {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute dRoute>
               <ProjectSettings />
             </ProtectedRoute>
           }
@@ -148,6 +163,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MyWebsites />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ai-architect"
+          element={
+            <ProtectedRoute>
+              <AIPromptBuilder />
             </ProtectedRoute>
           }
         />

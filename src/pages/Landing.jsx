@@ -11,13 +11,11 @@ import {
 import {
   SparklesIcon,
   CursorArrowRaysIcon,
-  GlobeAltIcon,
-  ShieldCheckIcon,
-  PuzzlePieceIcon,
   RocketLaunchIcon,
   ArrowRightIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
+import Logo from "../assets/Logo-2.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -59,15 +57,9 @@ const Landing = () => {
       <nav className="fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md z-[100] border-b border-gray-100">
         <div className="max-w-screen-xl mx-auto h-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-              <SparklesIcon className="h-5 w-5" />
+            <div className="h-10 px-6 my-3 flex items-center gap-2">
+              <img src={Logo} className="h-36 w-36" />
             </div>
-            <Typography
-              variant="h5"
-              className="text-gray-900 font-extrabold tracking-tight"
-            >
-              SiteFlow
-            </Typography>
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-500">
@@ -271,15 +263,9 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
             <div className="col-span-1 md:col-span-1">
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-                  <SparklesIcon className="h-5 w-5" />
+                <div className="h-10 px-6 my-3 flex items-center gap-2">
+                  <img src={Logo} className="h-36 w-36" />
                 </div>
-                <Typography
-                  variant="h5"
-                  className="text-gray-900 font-extrabold tracking-tight"
-                >
-                  SiteFlow
-                </Typography>
               </div>
               <Typography className="text-gray-500 text-sm font-medium leading-relaxed">
                 The world's most advanced AI-powered website builder.

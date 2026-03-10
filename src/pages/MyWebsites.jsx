@@ -48,26 +48,32 @@ const MyWebsites = () => {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const fetchWebsites = useCallback(async (search = "", status = "") => {
-    setIsLoading(true);
-    try {
-      const config = {
-        headers: { Authorization: `Bearer ${user.token}` },
-        params: { search, status: status === "all" ? "" : status },
-      };
-      const res = await axios.get("http://localhost:5000/api/websites", config);
-      setWebsites(res.data.data);
-    } catch (error) {
-      console.error("Error fetching websites:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user.token]);
+  const fetchWebsites = useCallback(
+    async (search = "", status = "") => {
+      setIsLoading(true);
+      try {
+        const config = {
+          headers: { Authorization: `Bearer ${user.token}` },
+          params: { search, status: status === "all" ? "" : status },
+        };
+        const res = await axios.get(
+          "http://localhost:5000/api/websites",
+          config,
+        );
+        setWebsites(res.data.data);
+      } catch (error) {
+        console.error("Error fetching websites:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [user.token],
+  );
 
   // Debounced search
   const debouncedFetch = useCallback(
     debounce((q, s) => fetchWebsites(q, s), 500),
-    [fetchWebsites]
+    [fetchWebsites],
   );
 
   useEffect(() => {
@@ -125,7 +131,10 @@ const MyWebsites = () => {
           {/* Header Section */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div>
-              <Typography variant="h2" className="text-gray-900 font-black tracking-tight mb-2">
+              <Typography
+                variant="h2"
+                className="text-gray-900 font-black tracking-tight mb-2"
+              >
                 Project Dashboard
               </Typography>
               <Typography className="text-gray-500 font-medium tracking-wide">
@@ -162,21 +171,25 @@ const MyWebsites = () => {
             {/* Search Input */}
             <div className="relative w-full lg:w-96 group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className={`h-5 w-5 transition-colors ${searchQuery ? "text-indigo-500" : "text-gray-400 group-focus-within:text-indigo-500"}`} />
+                <MagnifyingGlassIcon
+                  className={`h-5 w-5 transition-colors ${searchQuery ? "text-indigo-500" : "text-gray-400 group-focus-within:text-indigo-500"}`}
+                />
               </div>
               <input
                 type="text"
                 placeholder="Search your websites..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-11 pr-4 py-4.5 bg-white border border-gray-100 rounded-2xl text-sm font-medium placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/30 focus:border-indigo-200 transition-all shadow-sm"
+                className="block w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-indigo-100/30 focus:border-indigo-500 transition-all shadow-sm"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery("")}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-300 hover:text-gray-500"
                 >
-                  <Typography className="text-[10px] uppercase font-black tracking-widest leading-none">Clear</Typography>
+                  <Typography className="text-[10px] uppercase font-black tracking-widest leading-none">
+                    Clear
+                  </Typography>
                 </button>
               )}
             </div>
@@ -186,15 +199,25 @@ const MyWebsites = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {/* Skeletons while loading */}
             {isLoading ? (
-              Array(6).fill(0).map((_, i) => <WebsiteSkeleton key={i} />)
+              Array(6)
+                .fill(0)
+                .map((_, i) => <WebsiteSkeleton key={i} />)
             ) : websites.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/50 rounded-[3rem] border-2 border-dashed border-gray-200 mt-4">
                 <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
                   <PlusIcon className="h-10 w-10 text-indigo-200 stroke-[2]" />
                 </div>
-                <Typography variant="h4" className="text-gray-900 font-black mb-2">No Projects Found</Typography>
-                <Typography className="text-gray-500 font-medium mb-8">Try adjusting your search or filters to find what you're looking for.</Typography>
-                <Button 
+                <Typography
+                  variant="h4"
+                  className="text-gray-900 font-black mb-2"
+                >
+                  No Projects Found
+                </Typography>
+                <Typography className="text-gray-500 font-medium mb-8">
+                  Try adjusting your search or filters to find what you're
+                  looking for.
+                </Typography>
+                <Button
                   onClick={() => navigate("/ai-generate")}
                   className="bg-indigo-600 rounded-xl px-10 py-4 normal-case font-black shadow-lg shadow-indigo-100"
                 >
@@ -210,34 +233,47 @@ const MyWebsites = () => {
                   {/* Preview Area */}
                   <div className="h-60 bg-gray-50 relative overflow-hidden group-hover:bg-indigo-50/20 transition-colors">
                     <div className="absolute inset-0 flex items-center justify-center">
-                       {site.logo ? (
-                          <img src={site.logo} alt={site.name} className="w-20 h-20 opacity-20 object-contain" />
-                       ) : (
-                          <GlobeAltIcon className="h-24 w-24 text-indigo-100 group-hover:text-indigo-200 transition-colors" />
-                       )}
+                      {site.logo ? (
+                        <img
+                          src={site.logo}
+                          alt={site.name}
+                          className="w-20 h-20 opacity-20 object-contain"
+                        />
+                      ) : (
+                        <GlobeAltIcon className="h-24 w-24 text-indigo-100 group-hover:text-indigo-200 transition-colors" />
+                      )}
                     </div>
-                    
+
                     {/* Status Badge */}
                     <div className="absolute top-6 left-6 flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full border border-gray-100">
-                      <div className={`w-2 h-2 rounded-full ${site.isPublished ? "bg-green-500 animate-pulse" : "bg-orange-500"}`}></div>
-                      <Typography className={`text-[10px] font-black uppercase tracking-widest ${site.isPublished ? "text-green-600" : "text-orange-600"}`}>
+                      <div
+                        className={`w-2 h-2 rounded-full ${site.isPublished ? "bg-green-500 animate-pulse" : "bg-orange-500"}`}
+                      ></div>
+                      <Typography
+                        className={`text-[10px] font-black uppercase tracking-widest ${site.isPublished ? "text-green-600" : "text-orange-600"}`}
+                      >
                         {site.isPublished ? "Live" : "Draft"}
                       </Typography>
                     </div>
 
                     {/* Action Overlay */}
                     <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px] flex items-center justify-center gap-4">
-                       <IconButton 
+                      <IconButton
                         variant="white"
                         className="rounded-2xl w-14 h-14 bg-white/95 shadow-xl hover:scale-110 active:scale-95 transition-all text-indigo-600"
                         onClick={() => navigate(`/builder/${site._id}`)}
                       >
                         <PencilSquareIcon className="h-6 w-6 stroke-[2]" />
                       </IconButton>
-                      <IconButton 
+                      <IconButton
                         variant="white"
                         className="rounded-2xl w-14 h-14 bg-white/95 shadow-xl hover:scale-110 active:scale-95 transition-all text-gray-600"
-                        onClick={() => window.open(`http://${site.domain || site._id}.localhost:3000`, '_blank')}
+                        onClick={() =>
+                          window.open(
+                            `http://${site.domain || site._id}.localhost:3000`,
+                            "_blank",
+                          )
+                        }
                       >
                         <EyeIcon className="h-6 w-6 stroke-[2]" />
                       </IconButton>
@@ -257,11 +293,15 @@ const MyWebsites = () => {
                         <div className="flex items-center gap-2 text-gray-400">
                           <ClockIcon className="h-3.5 w-3.5" />
                           <Typography className="text-[11px] font-bold tracking-wide">
-                            Edited {new Date(site.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            Edited{" "}
+                            {new Date(site.updatedAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </Typography>
                         </div>
                       </div>
-                      
+
                       <Menu placement="bottom-end">
                         <MenuHandler>
                           <IconButton
@@ -276,7 +316,8 @@ const MyWebsites = () => {
                             className="rounded-xl py-3 flex items-center gap-3 font-bold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50/50"
                             onClick={() => navigate(`/builder/${site._id}`)}
                           >
-                            <PencilSquareIcon className="h-4 w-4" /> Open in Editor
+                            <PencilSquareIcon className="h-4 w-4" /> Open in
+                            Editor
                           </MenuItem>
                           <MenuItem
                             className="rounded-xl py-3 flex items-center gap-3 font-bold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50/50"
@@ -284,9 +325,7 @@ const MyWebsites = () => {
                           >
                             <Cog6ToothIcon className="h-4 w-4" /> Site Settings
                           </MenuItem>
-                          <MenuItem
-                            className="rounded-xl py-3 flex items-center gap-3 font-bold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50/50"
-                          >
+                          <MenuItem className="rounded-xl py-3 flex items-center gap-3 font-bold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50/50">
                             <Square2StackIcon className="h-4 w-4" /> Duplicate
                           </MenuItem>
                           <div className="h-px bg-gray-50 my-1 mx-2"></div>
@@ -302,18 +341,30 @@ const MyWebsites = () => {
 
                     {/* Stats (from Image 1) */}
                     <div className="grid grid-cols-3 gap-4 py-6 border-y border-gray-50 mb-0">
-                       <div className="flex flex-col">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">Visitors</span>
-                          <span className="text-sm font-black text-gray-700">12.4k</span>
-                       </div>
-                       <div className="flex flex-col">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">Sales</span>
-                          <span className="text-sm font-black text-gray-700">$1,280</span>
-                       </div>
-                       <div className="flex flex-col">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">Perf</span>
-                          <span className="text-sm font-black text-green-500">98%</span>
-                       </div>
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                          Visitors
+                        </span>
+                        <span className="text-sm font-black text-gray-700">
+                          12.4k
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                          Sales
+                        </span>
+                        <span className="text-sm font-black text-gray-700">
+                          $1,280
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                          Perf
+                        </span>
+                        <span className="text-sm font-black text-green-500">
+                          98%
+                        </span>
+                      </div>
                     </div>
 
                     <div className="mt-8 flex items-center gap-3">
@@ -322,7 +373,7 @@ const MyWebsites = () => {
                         onClick={() => navigate(`/builder/${site._id}`)}
                         className="bg-indigo-600 text-white shadow-lg shadow-indigo-100 hover:shadow-indigo-200 transition-all font-black py-4 rounded-2xl normal-case text-xs"
                       >
-                         {site.isPublished ? "Edit Site" : "Continue Editing"}
+                        {site.isPublished ? "Edit Site" : "Continue Editing"}
                       </Button>
                     </div>
                   </CardBody>
@@ -330,34 +381,64 @@ const MyWebsites = () => {
               ))
             )}
           </div>
-          
+
           {/* Recent Activity Section (from Image 1) */}
           <div className="mt-20 flex flex-col gap-6">
             <div className="flex items-center justify-between">
-              <Typography variant="h4" className="text-gray-900 font-black">Recent Activity</Typography>
-              <button className="text-sm font-black text-indigo-600 hover:text-indigo-700 transition-colors uppercase tracking-widest">View All History</button>
+              <Typography variant="h4" className="text-gray-900 font-black">
+                Recent Activity
+              </Typography>
+              <button className="text-sm font-black text-indigo-600 hover:text-indigo-700 transition-colors uppercase tracking-widest">
+                View All History
+              </button>
             </div>
-            
+
             <div className="bg-white rounded-[2.5rem] border border-gray-100 p-2 overflow-hidden">
-                {[
-                  { icon: GlobeAltIcon, title: "Portfolio 2024", desc: "was published to production", time: "2 hours ago", color: "bg-indigo-50 text-indigo-600" },
-                  { icon: PencilSquareIcon, title: "Minimalist Store", desc: "draft updated", time: "4 hours ago", color: "bg-orange-50 text-orange-600" },
-                  { icon: CheckBadgeIcon, title: "Custom Domain", desc: "pointing successfully", time: "Yesterday at 11:45 PM", color: "bg-green-50 text-green-600" },
-                ].map((act, i) => (
-                  <div key={i} className={`flex items-center gap-6 p-6 transition-colors hover:bg-gray-50/50 ${i !== 2 ? 'border-b border-gray-50' : ''}`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${act.color}`}>
-                      <act.icon className="h-6 w-6 stroke-[2]" />
-                    </div>
-                    <div className="flex-1">
-                      <Typography className="text-gray-900 font-bold tracking-tight">
-                        "{act.title}" <span className="text-gray-400 font-medium tracking-normal">{act.desc}</span>
-                      </Typography>
-                      <Typography className="text-[11px] font-bold text-gray-300 uppercase tracking-widest mt-1">
-                        {act.time}
-                      </Typography>
-                    </div>
+              {[
+                {
+                  icon: GlobeAltIcon,
+                  title: "Portfolio 2024",
+                  desc: "was published to production",
+                  time: "2 hours ago",
+                  color: "bg-indigo-50 text-indigo-600",
+                },
+                {
+                  icon: PencilSquareIcon,
+                  title: "Minimalist Store",
+                  desc: "draft updated",
+                  time: "4 hours ago",
+                  color: "bg-orange-50 text-orange-600",
+                },
+                {
+                  icon: CheckBadgeIcon,
+                  title: "Custom Domain",
+                  desc: "pointing successfully",
+                  time: "Yesterday at 11:45 PM",
+                  color: "bg-green-50 text-green-600",
+                },
+              ].map((act, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-6 p-6 transition-colors hover:bg-gray-50/50 ${i !== 2 ? "border-b border-gray-50" : ""}`}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center ${act.color}`}
+                  >
+                    <act.icon className="h-6 w-6 stroke-[2]" />
                   </div>
-                ))}
+                  <div className="flex-1">
+                    <Typography className="text-gray-900 font-bold tracking-tight">
+                      "{act.title}"{" "}
+                      <span className="text-gray-400 font-medium tracking-normal">
+                        {act.desc}
+                      </span>
+                    </Typography>
+                    <Typography className="text-[11px] font-bold text-gray-300 uppercase tracking-widest mt-1">
+                      {act.time}
+                    </Typography>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

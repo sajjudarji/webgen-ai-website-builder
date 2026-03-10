@@ -1,18 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Typography,
-  Card,
-  Progress,
-  Button,
-  IconButton,
-  Menu,
-  MenuHandler,
-  MenuList,
-  Avatar,
-  MenuItem,
-} from "@material-tailwind/react";
+import { Typography, Avatar } from "@material-tailwind/react";
 import { logout } from "../store/authSlice";
 import AppHeader from "../components/AppHeader";
 import AppFooter from "../components/AppFooter";
@@ -25,6 +14,7 @@ import {
   GlobeAltIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import Logo from "../assets/Logo-2.png";
 
 const DashboardLayout = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
@@ -38,6 +28,13 @@ const DashboardLayout = ({ children }) => {
   };
 
   const menuItems = [
+    {
+      name: "AI Architect",
+      icon: SparklesIcon,
+      path: "/ai-architect",
+      active: location.pathname === "/ai-architect",
+      premium: true,
+    },
     {
       name: "Dashboard",
       icon: Squares2X2Icon,
@@ -89,23 +86,37 @@ const DashboardLayout = ({ children }) => {
       onClick={() => navigate(item.path)}
       className={`relative w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-black transition-all group ${
         item.active
-          ? "bg-indigo-50/80 text-indigo-700"
-          : "text-gray-400 hover:text-gray-900 hover:bg-gray-50/50"
+          ? item.premium
+            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200"
+            : "bg-indigo-50/80 text-indigo-700"
+          : item.premium
+            ? "bg-white border border-indigo-50 text-indigo-900 hover:bg-indigo-50/30"
+            : "text-gray-400 hover:text-gray-900 hover:bg-gray-50/50"
       }`}
     >
       <div className="flex items-center gap-4">
         <item.icon
           className={`h-5 w-5 transition-colors ${
             item.active
-              ? "text-indigo-600"
-              : "text-gray-300 group-hover:text-gray-900"
+              ? item.premium
+                ? "text-white"
+                : "text-indigo-600"
+              : item.premium
+                ? "text-indigo-500"
+                : "text-gray-300 group-hover:text-gray-900"
           }`}
         />
         <span className="tracking-tight">{item.name}</span>
       </div>
 
+      {item.premium && !item.active && (
+        <div className="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-lg text-[9px] uppercase font-black tracking-widest border border-indigo-100">
+          PRO
+        </div>
+      )}
+
       {/* Far left global indicator bar */}
-      {item.active && (
+      {item.active && !item.premium && (
         <div
           className="fixed left-0 w-1.5 h-10 bg-indigo-600 rounded-r-lg shadow-[4px_0_15px_rgba(79,70,229,0.4)]"
           style={{ marginTop: "-2px" }}
@@ -115,27 +126,18 @@ const DashboardLayout = ({ children }) => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
+    <div className="flex h-screen bg-indigo-50/20 overflow-hidden font-sans relative z-0">
+      {/* Animated Ambient Background */}
+      <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-400/20 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }}></div>
+        <div className="absolute top-[40%] -right-[10%] w-[60%] h-[60%] rounded-full bg-purple-400/20 blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }}></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[40%] h-[40%] rounded-full bg-blue-400/20 blur-[100px] animate-pulse" style={{ animationDuration: '9s', animationDelay: '4s' }}></div>
+      </div>
+
       {/* Sidebar - Same as before but consistent */}
-      <aside className="w-64 bg-white border-r flex flex-col pt-6 pb-4 shrink-0">
-        <div className="px-6 mb-8 flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-            <SparklesIcon className="h-5 w-5" />
-          </div>
-          <div>
-            <Typography
-              variant="h6"
-              className="text-gray-900 leading-none font-black tracking-tight"
-            >
-              SiteAI
-            </Typography>
-            <Typography
-              variant="small"
-              className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest"
-            >
-              Pro Plan
-            </Typography>
-          </div>
+      <aside className="w-64 bg-white/80 backdrop-blur-xl border-r border-white/50 flex flex-col pb-4 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div className="h-10 px-6 my-3 flex items-center gap-2">
+          <img src={Logo} className="h-36 w-36" />
         </div>
 
         <nav className="flex-1 px-4 space-y-8 overflow-y-auto pt-2">

@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
+import Logo from "../assets/Logo-2.png";
 import {
   Typography,
   Button,
@@ -15,6 +16,10 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Input,
+  Select,
+  Option,
+  Switch,
 } from "@material-tailwind/react";
 import {
   ChevronLeftIcon,
@@ -27,6 +32,8 @@ import {
   ArrowUturnRightIcon,
   EyeIcon,
   RocketLaunchIcon,
+  CubeIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import {
@@ -52,26 +59,46 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
   };
 
   const [isPageDialogOpen, setIsPageDialogOpen] = React.useState(false);
-  const [newPageName, setNewPageName] = React.useState("");
+  const [newPageData, setNewPageData] = React.useState({
+    name: "",
+    type: "Landing",
+    slug: "",
+    addToNav: true,
+    template: "blank",
+  });
+
+  const handlePageNameChange = (val) => {
+    setNewPageData({
+      ...newPageData,
+      name: val,
+      slug: val.toLowerCase().replace(/\s+/g, "-"),
+    });
+  };
 
   const handleCreatePage = async () => {
-    if (!newPageName) return;
+    if (!newPageData.name) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const res = await axios.post(
         "http://localhost:5000/api/pages",
         {
           websiteId: currentWebsite._id,
-          name: newPageName,
-          slug: newPageName.toLowerCase().replace(/\s+/g, "-"),
-          layout: [],
+          name: newPageData.name,
+          slug: newPageData.slug,
+          layout: [], // Future: Insert layout from template
         },
         config,
       );
 
       if (res.data.success) {
         dispatch(addPageToList(res.data.data));
-        setNewPageName("");
+        setNewPageData({
+          name: "",
+          type: "Landing",
+          slug: "",
+          addToNav: true,
+          template: "blank",
+        });
         setIsPageDialogOpen(false);
       }
     } catch (error) {
@@ -94,21 +121,12 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
     <>
       <div className="h-20 border-b border-gray-100 bg-white flex items-center justify-between px-8 z-[100] sticky top-0 shrink-0 shadow-sm">
         {/* Left: Logo & Page Aligned with Left Panel */}
-        <div className="flex items-center gap-4 w-80 shrink-0">
+        <div className="flex items-center gap-2 w-80 shrink-0">
+          <img src={Logo} alt="Logo" className="w-32 h-32" />
           <div
             className="flex items-center gap-2 cursor-pointer group"
             onClick={() => navigate("/dashboard")}
-          >
-            <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100 group-hover:scale-110 transition-transform">
-              <SparklesIcon className="h-5 w-5" />
-            </div>
-            <Typography
-              variant="h6"
-              className="text-gray-900 font-extrabold tracking-tight hidden xl:block"
-            >
-              SiteGenie
-            </Typography>
-          </div>
+          ></div>
 
           {!isPreview && (
             <Menu>
@@ -153,6 +171,12 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
               </MenuList>
             </Menu>
           )}
+          <button
+            className="bg-blue-600 text-white py-2 px-3 rounded-xl text-sm font-bold"
+            onClick={() => navigate("/dashboard")}
+          >
+            Dashboard
+          </button>
         </div>
 
         {/* Center: Device Switcher - Truly Centered */}
@@ -282,31 +306,153 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview }) => {
       <Dialog
         open={isPageDialogOpen}
         handler={() => setIsPageDialogOpen(false)}
-        size="xs"
-        className="rounded-3xl shadow-2xl p-4"
+        size="md"
+        className="rounded-[2.5rem] shadow-2xl p-6 overflow-hidden bg-white"
       >
-        <DialogHeader className="font-extrabold text-gray-900 flex flex-col items-start gap-1 pb-2">
-          <Typography variant="h4">Create New Page</Typography>
-          <Typography className="text-gray-400 font-medium text-sm">
+        <DialogHeader className="flex flex-col items-start gap-1 pb-4">
+          <Typography
+            variant="h3"
+            className="text-gray-900 font-black tracking-tight"
+          >
+            Create New Page
+          </Typography>
+          <Typography className="text-gray-400 font-medium text-base">
             Design a new addition to your project
           </Typography>
         </DialogHeader>
-        <DialogBody className="py-8">
-          <></>
+        <DialogBody className="py-2 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Typography className="text-[11px] font-black text-gray-900 uppercase tracking-widest ml-1">
+                  Page Name
+                </Typography>
+                <Input
+                  variant="outlined"
+                  placeholder="e.g. Contact Us"
+                  value={newPageData.name}
+                  onChange={(e) => handlePageNameChange(e.target.value)}
+                  className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50 py-6"
+                  labelProps={{ className: "hidden" }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Typography className="text-[11px] font-black text-gray-900 uppercase tracking-widest ml-1">
+                  Page Type
+                </Typography>
+                <Select
+                  value={newPageData.type}
+                  onChange={(val) =>
+                    setNewPageData({ ...newPageData, type: val })
+                  }
+                  className="rounded-xl border-gray-200 bg-gray-50/50 py-3"
+                  labelProps={{ className: "hidden" }}
+                >
+                  <Option value="Landing">Landing Page</Option>
+                  <Option value="About">About Us</Option>
+                  <Option value="Services">Services</Option>
+                  <Option value="Blog">Blog Posts</Option>
+                  <Option value="Portfolio">Portfolio Grid</Option>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Typography className="text-[11px] font-black text-gray-900 uppercase tracking-widest ml-1">
+                  URL Slug Preview
+                </Typography>
+                <div className="bg-indigo-50/50 px-4 py-3 rounded-xl border border-indigo-100/50 flex items-center gap-2">
+                  <span className="text-indigo-200 font-bold text-sm">/</span>
+                  <span className="text-indigo-600 font-black text-sm">
+                    {newPageData.slug || "page-name"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                <div>
+                  <Typography className="text-xs font-black text-gray-900 leading-none mb-1">
+                    Navigation
+                  </Typography>
+                  <Typography className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Add to main menu
+                  </Typography>
+                </div>
+                <Switch
+                  color="indigo"
+                  checked={newPageData.addToNav}
+                  onChange={(e) =>
+                    setNewPageData({
+                      ...newPageData,
+                      addToNav: e.target.checked,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Typography className="text-[11px] font-black text-gray-900 uppercase tracking-widest ml-1">
+                Choose a Starting Point
+              </Typography>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: "blank", name: "Blank Slate", icon: SparklesIcon },
+                  {
+                    id: "marketing",
+                    name: "Marketing Landing",
+                    icon: RocketLaunchIcon,
+                  },
+                  { id: "product", name: "Product Detail", icon: CubeIcon },
+                  { id: "pricing", name: "Price Table", icon: TagIcon },
+                ].map((tpl) => (
+                  <button
+                    key={tpl.id}
+                    onClick={() =>
+                      setNewPageData({ ...newPageData, template: tpl.id })
+                    }
+                    className={`flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all group ${
+                      newPageData.template === tpl.id
+                        ? "bg-white border-indigo-600 shadow-xl shadow-indigo-100"
+                        : "bg-gray-50/50 border-transparent hover:bg-white hover:border-gray-100"
+                    }`}
+                  >
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                        newPageData.template === tpl.id
+                          ? "bg-indigo-50 text-indigo-600"
+                          : "bg-white text-gray-300 group-hover:text-gray-400"
+                      }`}
+                    >
+                      <tpl.icon className="h-5 w-5" />
+                    </div>
+                    <Typography
+                      className={`text-[10px] font-black uppercase tracking-widest text-center ${
+                        newPageData.template === tpl.id
+                          ? "text-gray-900"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {tpl.name}
+                    </Typography>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </DialogBody>
-        <DialogFooter className="gap-2">
+        <DialogFooter className="gap-4 pt-6">
           <Button
             variant="text"
             color="red"
             onClick={() => setIsPageDialogOpen(false)}
-            className="rounded-xl normal-case font-bold"
+            className="rounded-xl normal-case font-black text-[11px] uppercase tracking-widest"
           >
             Cancel
           </Button>
           <Button
-            color="indigo"
+            className="bg-indigo-600 rounded-xl normal-case font-black text-sm px-10 py-4 shadow-xl shadow-indigo-100 hover:shadow-indigo-200 transition-all transform active:scale-95"
             onClick={handleCreatePage}
-            className="rounded-xl normal-case font-bold px-8 shadow-none shadow-indigo-100"
           >
             Create Page
           </Button>

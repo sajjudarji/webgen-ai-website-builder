@@ -35,7 +35,9 @@ const AppHeader = () => {
     if (location.pathname.includes("/settings")) {
       return (
         <div className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
-          <span>Project</span>
+          <span className="text-blue-800">
+            Web<span className="text-blue-400">Gen</span>-AI
+          </span>
           <ChevronRightIcon className="h-3 w-3" strokeWidth={3} />
           <span className="text-gray-900">Portfolio 2024</span>
         </div>
@@ -44,7 +46,9 @@ const AppHeader = () => {
     if (location.pathname === "/dashboard") {
       return (
         <div className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
-          <span>Workspace</span>
+          <span className="text-blue-800">
+            Web<span className="text-blue-400">Gen</span>-AI
+          </span>
           <ChevronRightIcon className="h-3 w-3" strokeWidth={3} />
           <span className="text-gray-900">Overview</span>
         </div>
@@ -52,7 +56,9 @@ const AppHeader = () => {
     }
     return (
       <div className="flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">
-        <span>SiteAI</span>
+        <span className="text-blue-800">
+          Web<span className="text-blue-400">Gen</span>-AI
+        </span>
         <ChevronRightIcon className="h-3 w-3" strokeWidth={3} />
         <span className="text-gray-900 capitalize">
           {location.pathname.split("/")[1] || "Platform"}
@@ -62,7 +68,7 @@ const AppHeader = () => {
   };
 
   return (
-    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 shrink-0 sticky top-0 z-[100]">
+    <header className="h-20 bg-white/60 backdrop-blur-xl border-b border-white/50 flex items-center justify-between px-10 shrink-0 sticky top-0 z-[100] shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
       {/* Left Area: Breadcrumbs */}
       <div className="flex items-center">{getBreadcrumbs()}</div>
 
@@ -73,7 +79,7 @@ const AppHeader = () => {
           <MagnifyingGlassIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
           <input
             placeholder="Search settings..."
-            className="w-full pl-9 pr-4 py-2 bg-gray-50/80 border border-transparent rounded-xl focus:bg-white focus:border-indigo-100 transition-all outline-none text-[12px] font-bold placeholder:text-gray-300"
+            className="w-full pl-9 pr-4 py-2 bg-gray-50/80 border border-gray-100 rounded-lg focus:bg-white focus:border-indigo-500 transition-all outline-none text-[12px] font-bold placeholder:text-gray-300 shadow-sm"
           />
         </div>
 

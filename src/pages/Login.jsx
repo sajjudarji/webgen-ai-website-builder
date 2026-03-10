@@ -14,6 +14,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { login, reset } from "../store/authSlice";
+import Logo from "../assets/Logo-2.png";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -62,15 +63,9 @@ const Login = () => {
           <div className="max-w-[360px] mx-auto w-full">
             {/* Logo */}
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                <SparklesIcon className="h-4 w-4" />
+              <div className="h-10  my-3 flex items-center gap-2">
+                <img src={Logo} className="h-36 w-36" />
               </div>
-              <Typography
-                variant="h6"
-                className="text-gray-900 font-extrabold tracking-tight text-sm"
-              >
-                SiteFlow AI
-              </Typography>
             </div>
 
             <div className="mb-6">
@@ -100,7 +95,7 @@ const Login = () => {
                   name="email"
                   value={email}
                   onChange={onChange}
-                  className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50"
+                  className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white"
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
@@ -122,7 +117,7 @@ const Login = () => {
                     name="password"
                     value={password}
                     onChange={onChange}
-                    className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50 pr-10"
+                    className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white pr-10"
                     labelProps={{
                       className: "before:content-none after:content-none",
                     }}

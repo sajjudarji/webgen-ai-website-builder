@@ -252,7 +252,7 @@ const AIOnboarding = () => {
                       name="businessName"
                       value={formData.businessName}
                       onChange={handleInputChange}
-                      className="!border-white !bg-white shadow-xl shadow-gray-200/50 rounded-3xl py-8 px-8 text-lg font-bold placeholder:text-gray-300 focus:!border-indigo-600 !transition-all"
+                      className="!border-gray-100 !bg-white shadow-xl shadow-gray-200/50 rounded-xl py-4 px-6 text-lg font-bold placeholder:text-gray-300 focus:!border-indigo-600 !transition-all"
                       labelProps={{ className: "hidden" }}
                     />
                   </div>
@@ -270,8 +270,8 @@ const AIOnboarding = () => {
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
-                      rows={8}
-                      className="!border-white !bg-white shadow-xl shadow-gray-200/50 rounded-3xl p-8 text-lg font-medium placeholder:text-gray-300 focus:!border-indigo-600 !transition-all"
+                      rows={6}
+                      className="!border-gray-100 !bg-white shadow-xl shadow-gray-200/50 rounded-xl p-6 text-lg font-medium placeholder:text-gray-300 focus:!border-indigo-600 !transition-all"
                       labelProps={{ className: "hidden" }}
                     />
                   </div>

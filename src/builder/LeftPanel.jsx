@@ -1,33 +1,39 @@
-import React from "react";
-import { Typography, Input, Button, Card } from "@material-tailwind/react";
-import {
-  Squares2X2Icon,
-  ChatBubbleBottomCenterTextIcon,
-  PhotoIcon,
-  RectangleStackIcon,
-  CursorArrowRaysIcon,
-  ViewColumnsIcon,
-  ListBulletIcon,
-  VideoCameraIcon,
-  MagnifyingGlassIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
+import React, { useEffect, useState, useCallback } from "react";
+import { Typography, Card, Spinner, Input } from "@material-tailwind/react";
+import * as Icons from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const DraggableItem = ({ type, label, icon: Icon }) => {
+// Debounce helper
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+};
+
+const DraggableItem = ({ type, label, icon: Icon, defaultProps, defaultStyles }) => {
   return (
     <div
-      className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-50/50 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-3 transition-all group scale-100 active:scale-95"
+      className="p-3 bg-white border border-gray-100 rounded-xl hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-50/50 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-2 transition-all group scale-100 active:scale-95"
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("componentType", type);
+        e.dataTransfer.setData("defaultProps", JSON.stringify(defaultProps || {}));
+        e.dataTransfer.setData("defaultStyles", JSON.stringify(defaultStyles || {}));
       }}
     >
-      <div className="p-3 bg-gray-50 rounded-xl group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-        <Icon className="h-6 w-6 stroke-[1.5]" />
+      <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors shrink-0">
+        {Icon ? <Icon className="h-5 w-5 stroke-[1.5]" /> : <Icons.CubeIcon className="h-5 w-5 stroke-[1.5]" />}
       </div>
       <Typography
         variant="small"
-        className="text-[11px] font-bold text-gray-500 group-hover:text-gray-900 uppercase tracking-widest"
+        className="text-[9px] font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest text-center leading-tight truncate w-full"
       >
         {label}
       </Typography>
@@ -36,83 +42,119 @@ const DraggableItem = ({ type, label, icon: Icon }) => {
 };
 
 const LeftPanel = () => {
-  const categories = [
-    {
-      title: "Components",
-      items: [
-        { type: "hero", label: "Section", icon: RectangleStackIcon },
-        {
-          type: "text",
-          label: "Text Block",
-          icon: ChatBubbleBottomCenterTextIcon,
-        },
-        { type: "image", label: "Image", icon: PhotoIcon },
-        { type: "button", label: "Button", icon: CursorArrowRaysIcon },
-        { type: "form", label: "Form", icon: ListBulletIcon },
-        { type: "grid", label: "Grid", icon: ViewColumnsIcon },
-        { type: "list", label: "List", icon: Squares2X2Icon },
-        { type: "video", label: "Video", icon: VideoCameraIcon },
-      ],
-    },
-  ];
+  const [allWidgets, setAllWidgets] = useState([]);
+  const [filteredWidgets, setFilteredWidgets] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const { user } = useSelector((state) => state.auth);
+  
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  useEffect(() => {
+    const fetchWidgets = async () => {
+      try {
+        const config = {
+          headers: { Authorization: `Bearer ${user.token}` }
+        };
+        const res = await axios.get("http://localhost:5000/api/widgets", config);
+        if (res.data.success) {
+          setAllWidgets(res.data.data);
+          setFilteredWidgets(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching widgets:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWidgets();
+  }, [user.token]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      const filtered = allWidgets.filter(widget => 
+        widget.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        widget.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      );
+      setFilteredWidgets(filtered);
+    } else {
+      setFilteredWidgets(allWidgets);
+    }
+  }, [debouncedSearchTerm, allWidgets]);
+
+  // Group widgets by category
+  const categories = filteredWidgets.reduce((acc, widget) => {
+    const cat = widget.category || "General";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(widget);
+    return acc;
+  }, {});
 
   return (
-    <div className="w-80 border-r border-gray-100 bg-white h-[calc(100vh-80px)] overflow-y-auto flex flex-col">
-      {/* Search Header */}
-      <div className="p-6 border-b border-gray-50 sticky top-0 bg-white/80 backdrop-blur-md z-10">
-        <div className="flex items-center justify-between mb-6">
-          <Typography
-            variant="small"
-            className="font-black text-gray-900 uppercase tracking-[0.2em] text-[11px]"
-          >
-            Components
-          </Typography>
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 cursor-pointer hover:text-indigo-600 transition-colors" />
-        </div>
-        <div className="relative">
-          <MagnifyingGlassIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            placeholder="Search components..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-indigo-500 outline-none text-xs font-medium transition-all"
-          />
+    <div className="w-[300px] border-r border-gray-100 bg-white h-[calc(100vh-80px)] overflow-hidden flex flex-col shrink-0">
+      <div className="p-6 border-b border-gray-50 sticky top-0 bg-white/80 backdrop-blur-md z-10 space-y-4">
+        <Typography
+          variant="small"
+          className="font-black text-gray-900 uppercase tracking-[0.2em] text-[11px]"
+        >
+          Widget Library
+        </Typography>
+        
+        <div className="relative group">
+           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+           <input 
+              type="text"
+              placeholder="Search widgets..."
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+           />
         </div>
       </div>
 
-      <div className="p-6 scrollbar-hide flex-1">
-        {categories.map((cat) => (
-          <div key={cat.title}>
-            <div className="grid grid-cols-2 gap-4">
-              {cat.items.map((item) => (
-                <DraggableItem key={item.label} {...item} />
-              ))}
-            </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide pb-20">
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <Spinner className="h-8 w-8 text-indigo-500" />
           </div>
-        ))}
+        ) : filteredWidgets.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+             <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+                <Icons.CommandLineIcon className="h-6 w-6 text-gray-200" />
+             </div>
+             <Typography className="text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                No widgets found
+             </Typography>
+          </div>
+        ) : (
+          Object.entries(categories).map(([category, items]) => (
+            <div key={category} className="space-y-4">
+              <Typography className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] pl-1">
+                {category}
+              </Typography>
+              <div className="grid grid-cols-2 gap-3">
+                {items.map((widget) => (
+                  <DraggableItem 
+                    key={widget._id} 
+                    type={widget.type} 
+                    label={widget.label} 
+                    icon={Icons[widget.iconName]}
+                    defaultProps={widget.defaultProps}
+                    defaultStyles={widget.defaultStyles}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Upgrade CTA */}
-      <div className="p-6 border-t border-gray-50 mt-auto">
-        <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 shadow-none border border-indigo-100 rounded-[2rem] overflow-hidden relative group">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-          <Typography
-            variant="small"
-            className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mb-2 flex items-center gap-2"
-          >
-            <SparklesIcon className="h-4 w-4" /> Pro Feature
-          </Typography>
-          <Typography
-            variant="h6"
-            className="text-gray-900 font-extrabold leading-tight mb-4"
-          >
-            Unlock custom animations and advanced CMS features.
-          </Typography>
-          <Button
-            fullWidth
-            className="bg-indigo-600 rounded-xl py-3 shadow-none hover:shadow-lg hover:shadow-indigo-200 normal-case font-bold text-xs transition-all"
-          >
-            Upgrade Now
-          </Button>
-        </Card>
+      {/* Footer Branding */}
+      <div className="p-6 border-t border-gray-50 mt-auto bg-gray-50/50">
+        <Typography className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest leading-loose">
+          Refined Widget System v2.0 <br/>
+          <span className="text-indigo-400 font-extrabold uppercase">Premium Assets</span>
+        </Typography>
       </div>
     </div>
   );

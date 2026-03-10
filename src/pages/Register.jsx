@@ -109,7 +109,7 @@ const Register = () => {
                   name="name"
                   value={name}
                   onChange={onChange}
-                  className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50"
+                  className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white"
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
@@ -132,7 +132,7 @@ const Register = () => {
                   name="email"
                   value={email}
                   onChange={onChange}
-                  className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50"
+                  className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white"
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
@@ -158,7 +158,7 @@ const Register = () => {
                       name="password"
                       value={password}
                       onChange={onChange}
-                      className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50 pr-10"
+                      className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white pr-10"
                       labelProps={{
                         className: "before:content-none after:content-none",
                       }}
@@ -191,7 +191,7 @@ const Register = () => {
                       type={showConfirmPassword ? "text" : "password"}
                       size="md"
                       placeholder="••••••••"
-                      className="!border-gray-200 focus:!border-indigo-500 rounded-xl bg-gray-50/50 pr-10"
+                      className="!border-gray-200 focus:!border-indigo-500 rounded-lg bg-white pr-10"
                       labelProps={{
                         className: "before:content-none after:content-none",
                       }}
