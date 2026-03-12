@@ -79,7 +79,7 @@ const AppHeader = () => {
           <MagnifyingGlassIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
           <input
             placeholder="Search settings..."
-            className="w-full pl-9 pr-4 py-2 bg-gray-50/80 border border-gray-100 rounded-lg focus:bg-white focus:border-indigo-500 transition-all outline-none text-[12px] font-bold placeholder:text-gray-300 shadow-sm"
+            className="w-full pl-9 pr-4 py-2 bg-transparent border border-gray-500 rounded-lg focus:bg-white focus:border-indigo-500 transition-all outline-none text-[12px] font-bold placeholder:text-gray-800 shadow-sm"
           />
         </div>
 
@@ -88,7 +88,7 @@ const AppHeader = () => {
           color="blue-gray"
           className="rounded-full bg-gray-50/50 relative hover:bg-gray-100 transition-colors"
         >
-          <BellIcon className="h-5 w-5 text-gray-500" />
+          <BellIcon className="h-5 w-5 text-gray-700" />
           <span className="absolute top-2.5 right-3 w-2 h-2 bg-indigo-500 rounded-full border-2 border-white"></span>
         </IconButton>
 

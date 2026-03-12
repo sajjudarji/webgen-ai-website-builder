@@ -148,17 +148,6 @@ const Dashboard = () => {
                   Our latest engine can now generate full-stack landing pages in
                   under 60 seconds.
                 </Typography>
-                <div className="flex gap-4">
-                  <Button className="bg-white text-indigo-600 rounded-xl px-8 py-3.5 normal-case font-black shadow-lg shadow-indigo-900/20">
-                    Watch Demo
-                  </Button>
-                  <Button
-                    variant="text"
-                    className="text-white rounded-xl px-6 py-3.5 normal-case font-black border border-white/20 hover:bg-white/10"
-                  >
-                    Learn AI
-                  </Button>
-                </div>
 
                 {/* Optimization Badge (From Image) */}
                 <div className="absolute -bottom-4 -left-4 bg-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-gray-50 group-hover:scale-105 transition-transform">

@@ -146,24 +146,12 @@ const Templates = () => {
                   className={`px-6 py-2 rounded-full text-[13px] font-bold tracking-wide transition-all ${
                     activeCategory === cat
                       ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100"
-                      : "text-gray-500 hover:bg-gray-100"
+                      : "text-gray-900 hover:bg-gray-100"
                   }`}
                 >
                   {cat}
                 </button>
               ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Typography
-                variant="small"
-                className="text-gray-400 font-bold uppercase tracking-wider text-[11px]"
-              >
-                Sort by:
-              </Typography>
-              <button className="flex items-center gap-2 font-bold text-gray-900 text-[13px] hover:text-indigo-600 transition-colors">
-                Most Popular <ChevronDownIcon className="h-4 w-4" />
-              </button>
             </div>
           </div>
         </section>

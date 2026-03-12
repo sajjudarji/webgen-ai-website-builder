@@ -17,23 +17,39 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
-const DraggableItem = ({ type, label, icon: Icon, defaultProps, defaultStyles }) => {
+const DraggableItem = ({
+  type,
+  label,
+  icon: Icon,
+  defaultProps,
+  defaultStyles,
+}) => {
   return (
     <div
-      className="p-3 bg-white border border-gray-100 rounded-xl hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-50/50 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-2 transition-all group scale-100 active:scale-95"
+      className="p-3 bg-white border border-gray-500 rounded-xl hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-50/50 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-2 transition-all group scale-100 active:scale-95"
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("componentType", type);
-        e.dataTransfer.setData("defaultProps", JSON.stringify(defaultProps || {}));
-        e.dataTransfer.setData("defaultStyles", JSON.stringify(defaultStyles || {}));
+        e.dataTransfer.setData(
+          "defaultProps",
+          JSON.stringify(defaultProps || {}),
+        );
+        e.dataTransfer.setData(
+          "defaultStyles",
+          JSON.stringify(defaultStyles || {}),
+        );
       }}
     >
       <div className="p-2 bg-gray-50 rounded-lg group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors shrink-0">
-        {Icon ? <Icon className="h-5 w-5 stroke-[1.5]" /> : <Icons.CubeIcon className="h-5 w-5 stroke-[1.5]" />}
+        {Icon ? (
+          <Icon className="h-5 w-5 stroke-[1.5]" />
+        ) : (
+          <Icons.CubeIcon className="h-5 w-5 stroke-[1.5]" />
+        )}
       </div>
       <Typography
         variant="small"
-        className="text-[9px] font-black text-gray-400 group-hover:text-gray-900 uppercase tracking-widest text-center leading-tight truncate w-full"
+        className="text-[9px] font-black text-gray-700 group-hover:text-gray-800 uppercase tracking-widest text-center leading-tight truncate w-full"
       >
         {label}
       </Typography>
@@ -47,16 +63,19 @@ const LeftPanel = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useSelector((state) => state.auth);
-  
+
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const fetchWidgets = async () => {
       try {
         const config = {
-          headers: { Authorization: `Bearer ${user.token}` }
+          headers: { Authorization: `Bearer ${user.token}` },
         };
-        const res = await axios.get("http://localhost:5000/api/widgets", config);
+        const res = await axios.get(
+          "http://localhost:5000/api/widgets",
+          config,
+        );
         if (res.data.success) {
           setAllWidgets(res.data.data);
           setFilteredWidgets(res.data.data);
@@ -72,9 +91,14 @@ const LeftPanel = () => {
 
   useEffect(() => {
     if (debouncedSearchTerm) {
-      const filtered = allWidgets.filter(widget => 
-        widget.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        widget.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      const filtered = allWidgets.filter(
+        (widget) =>
+          widget.label
+            .toLowerCase()
+            .includes(debouncedSearchTerm.toLowerCase()) ||
+          widget.category
+            .toLowerCase()
+            .includes(debouncedSearchTerm.toLowerCase()),
       );
       setFilteredWidgets(filtered);
     } else {
@@ -99,16 +123,16 @@ const LeftPanel = () => {
         >
           Widget Library
         </Typography>
-        
+
         <div className="relative group">
-           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
-           <input 
-              type="text"
-              placeholder="Search widgets..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-           />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+          <input
+            type="text"
+            placeholder="Search widgets..."
+            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-500 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-gray-600"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
@@ -119,25 +143,25 @@ const LeftPanel = () => {
           </div>
         ) : filteredWidgets.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-             <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                <Icons.CommandLineIcon className="h-6 w-6 text-gray-200" />
-             </div>
-             <Typography className="text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                No widgets found
-             </Typography>
+            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
+              <Icons.CommandLineIcon className="h-6 w-6 text-gray-200" />
+            </div>
+            <Typography className="text-gray-400 text-[10px] font-black uppercase tracking-widest">
+              No widgets found
+            </Typography>
           </div>
         ) : (
           Object.entries(categories).map(([category, items]) => (
             <div key={category} className="space-y-4">
-              <Typography className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] pl-1">
+              <Typography className="text-[10px] font-black text-gray-800 uppercase tracking-[0.2em] pl-1">
                 {category}
               </Typography>
               <div className="grid grid-cols-2 gap-3">
                 {items.map((widget) => (
-                  <DraggableItem 
-                    key={widget._id} 
-                    type={widget.type} 
-                    label={widget.label} 
+                  <DraggableItem
+                    key={widget._id}
+                    type={widget.type}
+                    label={widget.label}
                     icon={Icons[widget.iconName]}
                     defaultProps={widget.defaultProps}
                     defaultStyles={widget.defaultStyles}
@@ -151,10 +175,12 @@ const LeftPanel = () => {
 
       {/* Footer Branding */}
       <div className="p-6 border-t border-gray-50 mt-auto bg-gray-50/50">
-        <Typography className="text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest leading-loose">
-          Refined Widget System v2.0 <br/>
-          <span className="text-indigo-400 font-extrabold uppercase">Premium Assets</span>
-        </Typography>
+        <p className="text-[11px] font-bold text-gray-800 text-center uppercase tracking-widest leading-loose">
+          Refined Widget System v2.0 <br />
+          <span className="text-indigo-400 font-extrabold uppercase">
+            Premium Assets
+          </span>
+        </p>
       </div>
     </div>
   );

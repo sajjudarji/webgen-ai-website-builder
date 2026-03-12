@@ -152,7 +152,7 @@ const MyWebsites = () => {
           {/* Search & Filter Bar */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 sticky top-0 z-20 pt-2 bg-[#f8fafc]">
             {/* Filter Tabs */}
-            <div className="flex items-center gap-2 bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl border border-gray-100/50 shadow-sm overflow-x-auto">
+            <div className="flex items-center gap-2 bg-white backdrop-blur-sm p-1.5 rounded-2xl border border-gray-100/50 shadow-sm overflow-x-auto">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -160,7 +160,7 @@ const MyWebsites = () => {
                   className={`px-6 py-2.5 rounded-[1.1rem] text-sm font-bold tracking-wide transition-all ${
                     activeTab === tab.id
                       ? "bg-white text-indigo-600 shadow-md shadow-indigo-100/20 border border-indigo-50"
-                      : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                      : "text-gray-900  hover:bg-white/50"
                   }`}
                 >
                   {tab.label}
@@ -342,7 +342,7 @@ const MyWebsites = () => {
                     {/* Stats (from Image 1) */}
                     <div className="grid grid-cols-3 gap-4 py-6 border-y border-gray-50 mb-0">
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-900 mb-1">
                           Visitors
                         </span>
                         <span className="text-sm font-black text-gray-700">
@@ -350,7 +350,7 @@ const MyWebsites = () => {
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-900 mb-1">
                           Sales
                         </span>
                         <span className="text-sm font-black text-gray-700">
@@ -358,7 +358,7 @@ const MyWebsites = () => {
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-1">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-900 mb-1">
                           Perf
                         </span>
                         <span className="text-sm font-black text-green-500">

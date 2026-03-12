@@ -102,15 +102,15 @@ const ProjectSettings = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-10 border-b border-gray-100 pb-2 overflow-x-auto">
+        <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-gray-100/50 shadow-sm overflow-x-auto w-fit">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-4 text-sm font-black tracking-wide transition-all border-b-2 whitespace-nowrap ${
+              className={`px-6 py-2.5 rounded-[1.1rem] text-sm font-bold tracking-wide transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-gray-400 hover:text-gray-700"
+                  ? "bg-white text-indigo-700 shadow-md shadow-indigo-100/20 border border-indigo-50"
+                  : "text-gray-900 hover:bg-gray-50/50"
               }`}
             >
               {tab.label}
@@ -143,15 +143,15 @@ const ProjectSettings = () => {
             {/* General Section */}
             <section className="space-y-8">
               <div className="space-y-1">
-                <Typography
+                <p
                   variant="h5"
                   className="text-gray-900 font-black tracking-tight"
                 >
                   General
-                </Typography>
-                <Typography className="text-gray-500 text-sm font-medium">
+                </p>
+                <p className="text-gray-500 text-sm font-medium">
                   Configure your basic website information.
-                </Typography>
+                </p>
               </div>
 
               <Card className="rounded-[2.5rem] border border-gray-100 shadow-none overflow-hidden">

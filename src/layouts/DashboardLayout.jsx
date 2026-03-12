@@ -94,19 +94,21 @@ const DashboardLayout = ({ children }) => {
             : "text-gray-400 hover:text-gray-900 hover:bg-gray-50/50"
       }`}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text-black">
         <item.icon
-          className={`h-5 w-5 transition-colors ${
+          className={`h-5 w-5 ${
             item.active
               ? item.premium
                 ? "text-white"
                 : "text-indigo-600"
               : item.premium
                 ? "text-indigo-500"
-                : "text-gray-300 group-hover:text-gray-900"
+                : "text-black group-hover:text-indigo-600"
           }`}
         />
-        <span className="tracking-tight">{item.name}</span>
+        <span className="tracking-tight text-black font-normal">
+          {item.name}
+        </span>
       </div>
 
       {item.premium && !item.active && (
@@ -126,14 +128,7 @@ const DashboardLayout = ({ children }) => {
   );
 
   return (
-    <div className="flex h-screen bg-indigo-50/20 overflow-hidden font-sans relative z-0">
-      {/* Animated Ambient Background */}
-      <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-400/20 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }}></div>
-        <div className="absolute top-[40%] -right-[10%] w-[60%] h-[60%] rounded-full bg-purple-400/20 blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }}></div>
-        <div className="absolute -bottom-[20%] left-[20%] w-[40%] h-[40%] rounded-full bg-blue-400/20 blur-[100px] animate-pulse" style={{ animationDuration: '9s', animationDelay: '4s' }}></div>
-      </div>
-
+    <div className="flex h-screen bg-transparent overflow-hidden font-sans relative z-0">
       {/* Sidebar - Same as before but consistent */}
       <aside className="w-64 bg-white/80 backdrop-blur-xl border-r border-white/50 flex flex-col pb-4 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
         <div className="h-10 px-6 my-3 flex items-center gap-2">
@@ -143,17 +138,17 @@ const DashboardLayout = ({ children }) => {
         <nav className="flex-1 px-4 space-y-8 overflow-y-auto pt-2">
           {/* Menu Section */}
           <div className="space-y-1">
-            <Typography className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] px-4 mb-4">
+            <p className="text-[12px] font-semibold text-black uppercase tracking-[0.2em] px-4 mb-4">
               Main Menu
-            </Typography>
+            </p>
             {menuItems.map(renderSidebarItem)}
           </div>
 
           {/* Preferences Section */}
           <div className="space-y-1">
-            <Typography className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] px-4 mb-4">
+            <p className="text-[12px] font-semibold text-black uppercase tracking-[0.2em] px-4 mb-4">
               Preferences
-            </Typography>
+            </p>
             {preferenceItems.map(renderSidebarItem)}
           </div>
         </nav>
