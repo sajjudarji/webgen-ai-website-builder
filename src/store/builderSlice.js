@@ -144,6 +144,15 @@ export const builderSlice = createSlice({
       state.history = [];
       state.future = [];
     },
+    setPageLayout: (state, action) => {
+      if (state.currentPage) {
+        state.history.push(
+          JSON.parse(JSON.stringify(state.currentPage.layout)),
+        );
+        state.currentPage.layout = action.payload;
+        state.future = [];
+      }
+    },
   },
 });
 
@@ -160,6 +169,7 @@ export const {
   deleteComponentProp,
   reorderComponents,
   addPageToList,
+  setPageLayout,
 } = builderSlice.actions;
 
 export default builderSlice.reducer;

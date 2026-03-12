@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Typography, Tooltip } from "@material-tailwind/react";
+import {
+  Typography,
+  Tooltip,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+} from "@material-tailwind/react";
 import {
   updateComponent,
   selectComponent,
@@ -47,7 +54,7 @@ const SpacingVisualizer = ({ component, onChange }) => {
 
   return (
     <div className="w-full bg-gray-50/80 p-1.5 rounded-2xl relative border border-gray-200 flex justify-center items-center py-5">
-      <Typography className="absolute top-1.5 left-3 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">
+      <Typography className="absolute top-1.5 left-3 text-[8px] font-black text-gray-900 uppercase tracking-[0.2em]">
         Margin
       </Typography>
 
@@ -57,7 +64,7 @@ const SpacingVisualizer = ({ component, onChange }) => {
           <InputNode prop="marginLeft" />
 
           <div className="bg-white p-2 rounded-xl border border-gray-200/60 shadow-sm flex flex-col items-center gap-1 w-40 relative">
-            <Typography className="absolute top-1.5 left-2 text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">
+            <Typography className="absolute top-1.5 left-2 text-[8px] font-black text-gray-900 uppercase tracking-[0.2em]">
               Padding
             </Typography>
             <div className="mt-3">
@@ -327,7 +334,7 @@ const StyleControl = ({ control, component, onChange }) => {
   if (type === "color") {
     return (
       <div className="flex items-center justify-between gap-3 mb-2">
-        <Typography className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest w-1/3 truncate">
+        <Typography className="text-[9.5px] font-bold text-gray-900 uppercase tracking-widest w-1/3 truncate">
           {label}
         </Typography>
         <div className="flex-1 flex bg-white border border-gray-100 rounded-md overflow-hidden relative group hover:border-indigo-400 focus-within:border-indigo-500 transition-all shadow-sm min-h-[28px]">
@@ -356,21 +363,34 @@ const StyleControl = ({ control, component, onChange }) => {
   if (type === "select") {
     return (
       <div className="flex items-center justify-between gap-3 mb-2">
-        <Typography className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest w-1/3 truncate">
+        <Typography className="text-[9.5px] font-bold text-gray-900 uppercase tracking-widest w-1/3 truncate">
           {label}
         </Typography>
-        <select
-          value={val}
-          onChange={(e) => onChange(name, e.target.value)}
-          className="flex-1 bg-white border border-gray-100 rounded-md px-2 py-1.5 text-[10px] font-bold text-gray-700 outline-none hover:border-indigo-400 transition-all shadow-sm"
-        >
-          <option value="">default</option>
-          {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+        <Menu placement="bottom-end">
+          <MenuHandler>
+            <div className="flex-1 cursor-pointer bg-white border border-gray-100 rounded-md px-2 py-1.5 flex items-center justify-between text-[10px] font-bold text-gray-700 hover:border-indigo-400 transition-all shadow-sm">
+              <span>{val || "default"}</span>
+              <ChevronDownIcon className="h-3 w-3 text-gray-400" />
+            </div>
+          </MenuHandler>
+          <MenuList className="p-1 border-gray-100 rounded-lg shadow-xl shadow-gray-200/50 min-w-[120px] max-h-60 overflow-y-auto z-[9999]">
+            <MenuItem
+              onClick={() => onChange(name, "")}
+              className="px-3 py-1.5 text-[10px] font-bold text-gray-500 hover:bg-gray-50 mb-1"
+            >
+              default
+            </MenuItem>
+            {options.map((opt) => (
+              <MenuItem
+                key={opt}
+                onClick={() => onChange(name, opt)}
+                className={`px-3 py-1.5 text-[10px] font-bold ${val === opt ? "bg-indigo-50 text-indigo-600" : "text-gray-700 hover:bg-gray-50"}`}
+              >
+                {opt}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
       </div>
     );
   }
@@ -378,7 +398,7 @@ const StyleControl = ({ control, component, onChange }) => {
   return (
     <div className="flex items-center justify-between gap-3 mb-2">
       <Typography
-        className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest w-1/3 truncate"
+        className="text-[9.5px] font-bold text-gray-900 uppercase tracking-widest w-1/3 truncate"
         title={label}
       >
         {label}
@@ -476,11 +496,11 @@ const RightPanel = () => {
       <div className="flex items-center gap-3">
         {section.icon && (
           <section.icon
-            className={`h-4 w-4 ${isOpen ? "text-indigo-600" : "text-gray-400"}`}
+            className={`h-4 w-4 ${isOpen ? "text-indigo-600" : "text-gray-900"}`}
           />
         )}
         <Typography
-          className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isOpen ? "text-indigo-900" : "text-gray-500"}`}
+          className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isOpen ? "text-indigo-900" : "text-gray-900"}`}
         >
           {section.title}
         </Typography>
@@ -557,12 +577,28 @@ const RightPanel = () => {
               <Typography className="text-[10px] font-black uppercase tracking-widest">
                 State Editor
               </Typography>
-              <select className="bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] font-bold outline-none uppercase tracking-widest focus:bg-white focus:text-indigo-900 transition-colors">
-                <option value="none">Normal</option>
-                <option value="hover">Hover</option>
-                <option value="active">Active</option>
-                <option value="focus">Focus</option>
-              </select>
+              <Menu placement="bottom-end">
+                <MenuHandler>
+                  <div className="cursor-pointer bg-white/10 border border-white/20 hover:bg-white/20 rounded px-3 py-1.5 flex items-center gap-2 text-[10px] font-bold outline-none uppercase tracking-widest transition-colors shadow-sm w-28 justify-between">
+                    <span>{activeTab === "Style" ? "Normal" : "Normal"}</span>
+                    <ChevronDownIcon strokeWidth={3} className="h-2.5 w-2.5" />
+                  </div>
+                </MenuHandler>
+                <MenuList className="p-1 min-w-[120px] bg-white border border-gray-100 rounded-lg shadow-2xl z-[9999]">
+                  <MenuItem className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 hover:bg-indigo-100">
+                    Normal
+                  </MenuItem>
+                  <MenuItem className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50">
+                    Hover
+                  </MenuItem>
+                  <MenuItem className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50">
+                    Active
+                  </MenuItem>
+                  <MenuItem className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50">
+                    Focus
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             </div>
 
             {SECTIONS.map((section) => (

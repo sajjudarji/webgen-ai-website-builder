@@ -194,15 +194,73 @@ export const WidgetRenderer = ({ component }) => {
     case "hero":
       return (
         <ComponentWrapper id={id} type="hero" styles={styles}>
-          <div className="relative py-32 px-12 text-center overflow-hidden min-h-[300px]" style={{ ...commonStyles, backgroundColor: commonStyles.backgroundColor || '#111827', color: commonStyles.color || '#FFFFFF' }}>
-            <div className="max-w-4xl mx-auto relative z-10">
-               <RenderChildren children={children} parentId={id} />
+          <div
+            className="relative py-32 px-12 text-center overflow-hidden min-h-[300px] flex flex-col items-center justify-center gap-6"
+            style={{
+              ...commonStyles,
+              backgroundColor: commonStyles.backgroundColor || "#111827",
+              color: commonStyles.color || "#FFFFFF",
+            }}
+          >
+            <div className="max-w-4xl mx-auto relative z-10 w-full">
+              {children && children.length > 0 ? (
+                <RenderChildren children={children} parentId={id} />
+              ) : (
+                <div className="space-y-6">
+                  {props.title && (
+                    <h1 className="text-5xl md:text-6xl font-black mb-4">
+                      {props.title}
+                    </h1>
+                  )}
+                  {props.subtitle && (
+                    <p className="text-xl opacity-90 max-w-2xl mx-auto">
+                      {props.subtitle}
+                    </p>
+                  )}
+                  {props.ctaText && (
+                    <button className="mt-8 px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl">
+                      {props.ctaText}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-            {/* Subtle overlay only if no background image is set */}
             {!commonStyles.backgroundImage && (
               <div className="absolute top-0 left-0 w-full h-full bg-black/5 pointer-events-none" />
             )}
           </div>
+        </ComponentWrapper>
+      );
+
+    case "form":
+      return (
+        <ComponentWrapper id={id} type="form" styles={styles}>
+          <form className="w-full space-y-4" style={commonStyles}>
+            <RenderChildren children={children} parentId={id} />
+          </form>
+        </ComponentWrapper>
+      );
+
+    case "input":
+      return (
+        <ComponentWrapper id={id} type="input" styles={styles}>
+          <input
+            type={props.type || "text"}
+            placeholder={props.placeholder || "Enter text..."}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+            style={commonStyles}
+          />
+        </ComponentWrapper>
+      );
+
+    case "textarea":
+      return (
+        <ComponentWrapper id={id} type="textarea" styles={styles}>
+          <textarea
+            placeholder={props.placeholder || "Enter message..."}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all min-h-[120px]"
+            style={commonStyles}
+          />
         </ComponentWrapper>
       );
 
