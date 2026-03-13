@@ -226,52 +226,53 @@ const MyWebsites = () => {
                 .fill(0)
                 .map((_, i) => <WebsiteSkeleton key={i} />)
             ) : websites.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/50 rounded-[3rem] border-2 border-dashed border-gray-200 mt-4">
-                <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
-                  <PlusIcon className="h-10 w-10 text-indigo-200 stroke-[2]" />
+              <div className="col-span-full flex flex-col items-center justify-center py-24 bg-white/40 rounded-[3rem] border border-white/50 backdrop-blur-xl mt-4">
+                <div className="w-24 h-24 bg-indigo-50 rounded-[2rem] flex items-center justify-center mb-6 shadow-indigo-100/50 shadow-2xl">
+                  <PlusIcon className="h-10 w-10 text-indigo-400 stroke-[2]" />
                 </div>
                 <Typography
                   variant="h4"
                   className="text-gray-900 font-black mb-2"
                 >
-                  No Projects Found
+                  Empty Workspace
                 </Typography>
-                <Typography className="text-gray-500 font-medium mb-8">
-                  Try adjusting your search or filters to find what you're
-                  looking for.
+                <Typography className="text-gray-500 font-bold text-sm mb-8 opacity-60">
+                  You haven't synthesized any websites yet.
                 </Typography>
                 <Button
                   onClick={() => navigate("/ai-generate")}
-                  className="bg-indigo-600 rounded-xl px-10 py-4 normal-case font-black shadow-lg shadow-indigo-100"
+                  className="bg-indigo-600 rounded-2xl px-12 py-4 normal-case font-black shadow-xl shadow-indigo-100 transition-all hover:scale-105"
                 >
-                  Start New Project
+                  Synthesize Now
                 </Button>
               </div>
             ) : (
-              websites.map((site) => (
+                            websites.map((site, index) => (
                 <Card
                   key={site._id}
-                  className="rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-none hover:shadow-[0_40px_80px_-20px_rgba(79,70,229,0.12)] transition-all duration-500 group h-full flex flex-col relative bg-white"
+                  className="rounded-[3rem] overflow-hidden border border-gray-100/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_32px_64px_-16px_rgba(79,70,229,0.15)] transition-all duration-700 group h-full flex flex-col relative bg-white"
                 >
                   {/* Preview Area */}
-                  <div className="h-60 bg-gray-50 relative overflow-hidden group-hover:bg-indigo-50/20 transition-colors">
+                  <div className="h-64 bg-gray-50 relative overflow-hidden">
                     <img
-                      src={site.thumbnail || `https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800&site=${site._id}`}
+                      src={`https://images.unsplash.com/photo-${index === 0 ? '1460925895917-afdab827c52f' : index === 1 ? '1498050108023-c5249f4df085' : index === 2 ? '1547658719-da2b51169166' : '1554672408-730436b60dde'}?auto=format&fit=crop&q=80&w=800`}
                       alt={site.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                     {/* Status Badge */}
-                    <div className="absolute top-6 left-6 flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full border border-gray-100">
-                      <div
-                        className={`w-2 h-2 rounded-full ${site.isPublished ? "bg-green-500 animate-pulse" : "bg-orange-500"}`}
-                      ></div>
-                      <Typography
-                        className={`text-[10px] font-black uppercase tracking-widest ${site.isPublished ? "text-green-600" : "text-orange-600"}`}
-                      >
-                        {site.isPublished ? "Live" : "Draft"}
-                      </Typography>
+                    <div className="absolute top-6 left-6 block">
+                      <div className={`backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/30 flex items-center gap-2 shadow-2xl ${site.isPublished ? "bg-green-500/10" : "bg-orange-500/10"}`}>
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${site.isPublished ? "bg-green-400" : "bg-orange-400"} animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]`}
+                        ></div>
+                        <Typography
+                          className={`text-[9px] font-black uppercase tracking-widest ${site.isPublished ? "text-green-400" : "text-orange-400"}`}
+                        >
+                          {site.isPublished ? "Online" : "Drafting"}
+                        </Typography>
+                      </div>
                     </div>
 
                     {/* Action Overlay */}
