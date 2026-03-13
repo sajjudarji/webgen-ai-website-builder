@@ -31,6 +31,7 @@ import {
   TrashIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -51,10 +52,15 @@ const Dashboard = () => {
         const config = {
           headers: { Authorization: `Bearer ${user.token}` },
           params: {
-            status: activeTab === "all" ? "" : activeTab === "drafts" ? "draft" : activeTab,
+            status:
+              activeTab === "all"
+                ? ""
+                : activeTab === "drafts"
+                  ? "draft"
+                  : activeTab,
             page: currentPage,
-            limit: 5
-          }
+            limit: 5,
+          },
         };
         const res = await axios.get(
           "http://localhost:5000/api/websites",
@@ -287,62 +293,84 @@ const Dashboard = () => {
           {/* Project Grid */}
           {isLoading ? (
             <div className="flex justify-center py-20">
-              <Typography>Loading your workspace...</Typography>
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                <Typography className="text-gray-400 font-bold animate-pulse">
+                  Synchronizing Workspace...
+                </Typography>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Create New Card */}
               <button
                 onClick={() => navigate("/templates")}
-                className="h-full border-4 border-dashed border-gray-100 rounded-[2rem] p-10 flex flex-col items-center justify-center text-center transition-all hover:bg-indigo-50/50 hover:border-indigo-100 group min-h-[400px]"
+                className="group relative h-full bg-white border-4 border-dashed border-indigo-50 rounded-[3rem] p-10 flex flex-col items-center justify-center text-center transition-all hover:bg-indigo-50/50 hover:border-indigo-100 min-h-[480px] shadow-sm hover:shadow-xl"
               >
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border shadow-sm mb-6 group-hover:scale-110 transition-transform">
-                  <PlusIcon className="h-8 w-8 text-indigo-600" />
+                <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center border border-gray-100 shadow-xl mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
+                  <PlusIcon className="h-10 w-10 text-indigo-600 stroke-[2.5]" />
                 </div>
                 <Typography
-                  variant="h5"
-                  className="text-gray-900 font-bold mb-2"
+                  variant="h4"
+                  className="text-gray-900 font-black mb-2"
                 >
-                  Create New Site
+                  New Project
                 </Typography>
-                <Typography
-                  variant="small"
-                  className="text-gray-400 font-medium max-w-[200px]"
-                >
-                  Start with a blank canvas or use a template
+                <Typography className="text-gray-400 font-bold text-xs max-w-[180px]">
+                  Launch a high-performance site with AI assistance
                 </Typography>
+
+                {/* Visual Flair */}
+                <div className="absolute top-8 right-8 w-3 h-3 rounded-full bg-indigo-200/50 animate-ping"></div>
               </button>
 
               {filteredWebsites.map((site, index) => (
                 <Card
                   key={site._id}
-                  className="rounded-[2rem] overflow-hidden border border-gray-100 shadow-none hover:shadow-2xl hover:shadow-indigo-50 transition-all group h-full flex flex-col"
+                  className="rounded-[3rem] overflow-hidden border border-gray-100/50 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_32px_64px_-16px_rgba(79,70,229,0.15)] transition-all duration-700 group h-full flex flex-col"
                 >
-                  <div className="h-56 bg-white relative overflow-hidden flex items-center justify-center p-8 bg-gray-50/20">
-                    <div className="w-full h-full bg-indigo-50/30 rounded-2xl flex items-center justify-center border border-indigo-50">
-                      <GlobeAltIcon className="h-20 w-20 text-indigo-100/50" />
+                  <div className="h-64 relative overflow-hidden">
+                    <img
+                      src={`https://images.unsplash.com/photo-${index === 0 ? "1460925895917-afdab827c52f" : index === 1 ? "1498050108023-c5249f4df085" : index === 2 ? "1547658719-da2b51169166" : "1555066931-4365d14bab8c"}?auto=format&fit=crop&q=80&w=800`}
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      alt="Project Preview"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                    {/* Floating Glass Badge */}
+                    <div className="absolute top-6 left-6 block">
+                      <div
+                        className={`backdrop-blur-md px-3 py-1.5 rounded-full border border-white/30 flex items-center gap-2 shadow-xl ${index % 2 === 0 ? "bg-green-500/10" : "bg-orange-500/10"}`}
+                      >
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${index % 2 === 0 ? "bg-green-400" : "bg-orange-400"} animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]`}
+                        ></div>
+                        <span
+                          className={`text-[9px] font-black uppercase tracking-widest ${index % 2 === 0 ? "text-green-400" : "text-orange-400"}`}
+                        >
+                          {index % 2 === 0 ? "Live" : "Draft"}
+                        </span>
+                      </div>
                     </div>
                   </div>
+
                   <CardBody className="p-8 flex flex-col flex-1">
                     <div className="flex justify-between items-start mb-6">
                       <div>
+                        <Typography className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+                          {index % 2 === 0
+                            ? "SaaS Platform"
+                            : "Retail Experience"}
+                        </Typography>
                         <Typography
                           variant="h5"
-                          className="text-gray-900 font-bold tracking-tight mb-1 truncate max-w-[180px]"
+                          className="text-gray-900 font-black tracking-tight mb-1 truncate max-w-[200px]"
                         >
                           {site.name}
                         </Typography>
-                        <Typography
-                          variant="small"
-                          className="text-gray-400 font-bold text-[10px]"
-                        >
-                          Last edited 2h ago
+                        <Typography className="text-gray-400 font-bold text-[10px] flex items-center gap-1.5">
+                          <ClockIcon className="h-3 w-3" /> Synchronized 2h ago
                         </Typography>
-                      </div>
-                      <div
-                        className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider ${index % 2 === 0 ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-600"}`}
-                      >
-                        {index % 2 === 0 ? "Published" : "Draft"}
                       </div>
                     </div>
 
@@ -390,7 +418,16 @@ const Dashboard = () => {
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 px-4 bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
               <div className="flex flex-col">
                 <Typography className="text-sm font-bold text-gray-900">
-                  Showing <span className="text-indigo-600">{(currentPage - 1) * 5 + 1}</span> to <span className="text-indigo-600">{Math.min(currentPage * 5, totalWebsites)}</span> of <span className="text-indigo-600">{totalWebsites}</span> items
+                  Showing{" "}
+                  <span className="text-indigo-600">
+                    {(currentPage - 1) * 5 + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="text-indigo-600">
+                    {Math.min(currentPage * 5, totalWebsites)}
+                  </span>{" "}
+                  of <span className="text-indigo-600">{totalWebsites}</span>{" "}
+                  items
                 </Typography>
                 <Typography className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1">
                   Page {currentPage} of {totalPages}
@@ -401,7 +438,9 @@ const Dashboard = () => {
                 <IconButton
                   variant="text"
                   className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30"
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   disabled={currentPage === 1}
                 >
                   <ChevronLeftIcon className="h-5 w-5 stroke-[2.5]" />
@@ -410,7 +449,11 @@ const Dashboard = () => {
                 <div className="flex items-center gap-1">
                   {[...Array(totalPages)].map((_, i) => {
                     const pageNum = i + 1;
-                    if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                    ) {
                       return (
                         <button
                           key={pageNum}
@@ -424,8 +467,16 @@ const Dashboard = () => {
                           {pageNum}
                         </button>
                       );
-                    } else if ((pageNum === 2 && currentPage > 3) || (pageNum === totalPages - 1 && currentPage < totalPages - 2)) {
-                      return <span key={pageNum} className="text-gray-300 px-1">...</span>;
+                    } else if (
+                      (pageNum === 2 && currentPage > 3) ||
+                      (pageNum === totalPages - 1 &&
+                        currentPage < totalPages - 2)
+                    ) {
+                      return (
+                        <span key={pageNum} className="text-gray-300 px-1">
+                          ...
+                        </span>
+                      );
                     }
                     return null;
                   })}
@@ -434,7 +485,9 @@ const Dashboard = () => {
                 <IconButton
                   variant="text"
                   className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30"
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                 >
                   <ChevronRightIcon className="h-5 w-5 stroke-[2.5]" />
