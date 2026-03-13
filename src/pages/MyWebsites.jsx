@@ -27,9 +27,12 @@ import {
   PencilSquareIcon,
   ClockIcon,
   FunnelIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 import DashboardLayout from "../layouts/DashboardLayout";
+import toast from "react-hot-toast";
 
 // Simple debounce function
 const debounce = (func, wait) => {
@@ -45,22 +48,32 @@ const MyWebsites = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalWebsites, setTotalWebsites] = useState(0);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const fetchWebsites = useCallback(
-    async (search = "", status = "") => {
+    async (search = "", status = "", page = 1) => {
       setIsLoading(true);
       try {
         const config = {
           headers: { Authorization: `Bearer ${user.token}` },
-          params: { search, status: status === "all" ? "" : status },
+          params: { 
+            search, 
+            status: status === "all" ? "" : status,
+            page,
+            limit: 5
+          },
         };
         const res = await axios.get(
           "http://localhost:5000/api/websites",
           config,
         );
         setWebsites(res.data.data);
+        setTotalPages(res.data.pages || 1);
+        setTotalWebsites(res.data.total || 0);
       } catch (error) {
         console.error("Error fetching websites:", error);
       } finally {
@@ -72,25 +85,35 @@ const MyWebsites = () => {
 
   // Debounced search
   const debouncedFetch = useCallback(
-    debounce((q, s) => fetchWebsites(q, s), 500),
+    debounce((q, s, p) => fetchWebsites(q, s, p), 500),
     [fetchWebsites],
   );
 
   useEffect(() => {
-    debouncedFetch(searchQuery, activeTab);
-  }, [searchQuery, activeTab, debouncedFetch]);
+    debouncedFetch(searchQuery, activeTab, currentPage);
+  }, [searchQuery, activeTab, currentPage, debouncedFetch]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTab]);
 
   const deleteWebsite = async (id) => {
-    if (window.confirm("Are you sure you want to delete this website?")) {
-      try {
+    // We'll keep a simple confirm for now, but use toast for the outcome
+    if (window.confirm("Are you sure you want to delete this website? This action cannot be undone.")) {
+      const deletePromise = (async () => {
         const config = {
           headers: { Authorization: `Bearer ${user.token}` },
         };
         await axios.delete(`http://localhost:5000/api/websites/${id}`, config);
         setWebsites(websites.filter((site) => site._id !== id));
-      } catch (error) {
-        console.error("Error deleting website:", error);
-      }
+      })();
+
+      toast.promise(deletePromise, {
+        loading: 'Deleting project...',
+        success: 'Project permanently removed.',
+        error: 'Failed to delete project.',
+      });
     }
   };
 
@@ -232,17 +255,12 @@ const MyWebsites = () => {
                 >
                   {/* Preview Area */}
                   <div className="h-60 bg-gray-50 relative overflow-hidden group-hover:bg-indigo-50/20 transition-colors">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {site.logo ? (
-                        <img
-                          src={site.logo}
-                          alt={site.name}
-                          className="w-20 h-20 opacity-20 object-contain"
-                        />
-                      ) : (
-                        <GlobeAltIcon className="h-24 w-24 text-indigo-100 group-hover:text-indigo-200 transition-colors" />
-                      )}
-                    </div>
+                    <img
+                      src={site.thumbnail || `https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800&site=${site._id}`}
+                      alt={site.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
 
                     {/* Status Badge */}
                     <div className="absolute top-6 left-6 flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur shadow-sm rounded-full border border-gray-100">
@@ -381,6 +399,72 @@ const MyWebsites = () => {
               ))
             )}
           </div>
+
+          {/* Pagination Section */}
+          {!isLoading && totalWebsites > 5 && (
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 px-4 bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+              <div className="flex flex-col">
+                <Typography className="text-sm font-bold text-gray-900">
+                  Showing <span className="text-indigo-600">{(currentPage - 1) * 5 + 1}</span> to <span className="text-indigo-600">{Math.min(currentPage * 5, totalWebsites)}</span> of <span className="text-indigo-600">{totalWebsites}</span> projects
+                </Typography>
+                <Typography className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1">
+                  5 Projects per page
+                </Typography>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <IconButton
+                  variant="text"
+                  className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeftIcon className="h-5 w-5 stroke-[2.5]" />
+                </IconButton>
+
+                <div className="flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => {
+                    const pageNum = i + 1;
+                    // Only show first, last, and pages around current
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${
+                            currentPage === pageNum
+                              ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100 scale-110"
+                              : "text-gray-400 hover:text-indigo-600 hover:bg-indigo-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (
+                      (pageNum === 2 && currentPage > 3) ||
+                      (pageNum === totalPages - 1 && currentPage < totalPages - 2)
+                    ) {
+                      return <span key={pageNum} className="text-gray-300 px-1">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <IconButton
+                  variant="text"
+                  className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30 disabled:hover:bg-transparent"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRightIcon className="h-5 w-5 stroke-[2.5]" />
+                </IconButton>
+              </div>
+            </div>
+          )}
 
           {/* Recent Activity Section (from Image 1) */}
           <div className="mt-20 flex flex-col gap-6">

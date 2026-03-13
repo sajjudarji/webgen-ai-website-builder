@@ -115,7 +115,7 @@ const LeftPanel = () => {
   }, {});
 
   return (
-    <div className="w-[300px] border-r border-gray-100 bg-white h-[calc(100vh-80px)] overflow-hidden flex flex-col shrink-0">
+    <div className="w-full bg-white h-[calc(100vh-80px)] overflow-hidden flex flex-col shrink-0">
       <div className="p-6 border-b border-gray-50 sticky top-0 bg-white/80 backdrop-blur-md z-10 space-y-4">
         <Typography
           variant="small"
@@ -128,8 +128,8 @@ const LeftPanel = () => {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
           <input
             type="text"
-            placeholder="Search widgets..."
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-500 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all placeholder:text-gray-600"
+            placeholder="Search widgets (e.g. hero, card)..."
+            className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:bg-white focus:border-indigo-500 transition-all outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

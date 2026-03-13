@@ -37,50 +37,76 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 
-// Helper visual spacing editor (Webflow style)
-const SpacingVisualizer = ({ component, onChange }) => {
-  const getVal = (prop) => component.styles?.[prop] || "";
-  const setVal = (prop, val) => onChange(prop, val);
+// Helper Box Model Editor (Browser DevTools / Webflow Style)
+const BoxModelEditor = ({ component, onChange }) => {
+  const getS = (prop) => component.styles?.[prop] || "0";
 
-  const InputNode = ({ prop }) => (
+  const ValueInput = ({ prop, label, className = "" }) => (
     <input
       type="text"
-      value={getVal(prop)}
-      onChange={(e) => setVal(prop, e.target.value)}
-      placeholder="-"
-      className="w-8 text-center bg-transparent border-none outline-none text-[10px] font-bold text-gray-700 hover:bg-gray-200/50 focus:bg-white focus:ring-1 focus:ring-indigo-400 rounded transition-all"
+      value={getS(prop)}
+      onChange={(e) => onChange(prop, e.target.value)}
+      title={label}
+      className={`w-8 text-center bg-transparent border-none outline-none text-[9px] font-black text-gray-900 hover:bg-indigo-50/50 focus:bg-white rounded p-0.5 transition-all ${className}`}
     />
   );
 
   return (
-    <div className="w-full bg-gray-50/80 p-1.5 rounded-2xl relative border border-gray-200 flex justify-center items-center py-5">
-      <Typography className="absolute top-1.5 left-3 text-[8px] font-black text-gray-900 uppercase tracking-[0.2em]">
-        Margin
-      </Typography>
+    <div className="w-full select-none p-1">
+      {/* Margin Box */}
+      <div className="bg-gray-50/80 border border-gray-200 rounded-[1.5rem] p-2 relative flex flex-col items-center shadow-sm">
+        <span className="absolute top-2.5 left-4 text-[9px] font-black text-gray-900 uppercase tracking-[0.2em]">
+          margin
+        </span>
+        <ValueInput prop="marginTop" label="Margin Top" />
 
-      <div className="flex flex-col items-center gap-1">
-        <InputNode prop="marginTop" />
-        <div className="flex items-center gap-1 w-full justify-center">
-          <InputNode prop="marginLeft" />
+        <div className="flex items-center w-full justify-between gap-1">
+          <ValueInput prop="marginLeft" label="Margin Left" />
 
-          <div className="bg-white p-2 rounded-xl border border-gray-200/60 shadow-sm flex flex-col items-center gap-1 w-40 relative">
-            <Typography className="absolute top-1.5 left-2 text-[8px] font-black text-gray-900 uppercase tracking-[0.2em]">
-              Padding
-            </Typography>
-            <div className="mt-3">
-              <InputNode prop="paddingTop" />
+          {/* Padding Box */}
+          <div className="flex-1 bg-white border border-gray-200 rounded-[1.2rem] p-3 relative flex flex-col items-center min-w-[160px] shadow-sm">
+            <span className="absolute top-2.5 left-4 text-[9px] font-black text-gray-900 uppercase tracking-[0.2em]">
+              padding
+            </span>
+            <ValueInput
+              prop="paddingTop"
+              label="Padding Top"
+              className="text-indigo-600"
+            />
+
+            <div className="flex items-center w-full justify-between gap-1">
+              <ValueInput
+                prop="paddingLeft"
+                label="Padding Left"
+                className="text-indigo-600"
+              />
+
+              {/* Content Placeholder */}
+              <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-4 py-2 min-w-[70px] flex items-center justify-center">
+                <span className="text-[10px] font-black text-indigo-900 opacity-60">
+                  {component.styles?.width || "auto"} ×{" "}
+                  {component.styles?.height || "auto"}
+                </span>
+              </div>
+
+              <ValueInput
+                prop="paddingRight"
+                label="Padding Right"
+                className="text-indigo-600"
+              />
             </div>
-            <div className="flex items-center gap-1 w-full justify-between px-1">
-              <InputNode prop="paddingLeft" />
-              <div className="bg-gray-50/50 flex-1 h-6 border border-gray-100 rounded-md"></div>
-              <InputNode prop="paddingRight" />
-            </div>
-            <InputNode prop="paddingBottom" />
+
+            <ValueInput
+              prop="paddingBottom"
+              label="Padding Bottom"
+              className="text-indigo-600"
+            />
           </div>
 
-          <InputNode prop="marginRight" />
+          <ValueInput prop="marginRight" label="Margin Right" />
         </div>
-        <InputNode prop="marginBottom" />
+
+        <ValueInput prop="marginBottom" label="Margin Bottom" />
       </div>
     </div>
   );
@@ -321,6 +347,105 @@ const SECTIONS = [
   },
 ];
 
+const GOOGLE_FONTS = [
+  "Inter",
+  "Poppins",
+  "Roboto",
+  "Montserrat",
+  "Playfair Display",
+  "Outfit",
+  "Open Sans",
+  "Lato",
+  "Raleway",
+  "Oswald",
+  "Lora",
+  "Merriweather",
+  "Noto Sans",
+  "Ubuntu",
+  "PT Sans",
+  "Josefin Sans",
+  "Quicksand",
+];
+
+const SearchableDropdown = ({
+  label,
+  value,
+  options,
+  onSelect,
+  placeholder = "Search...",
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [filter, setFilter] = useState("");
+
+  const filteredOptions = options.filter((opt) =>
+    opt.toLowerCase().includes(filter.toLowerCase()),
+  );
+
+  return (
+    <div className="flex items-center justify-between gap-3 mb-2">
+      <Typography className="text-[9.5px] font-bold text-gray-900 uppercase tracking-widest w-1/3 truncate">
+        {label}
+      </Typography>
+      <Menu placement="bottom-end" open={isOpen} handler={setIsOpen}>
+        <MenuHandler>
+          <div className="flex-1 cursor-pointer bg-white border border-gray-100 rounded-md px-2 py-1.5 flex items-center justify-between text-[10px] font-bold text-gray-700 hover:border-indigo-400 transition-all shadow-sm">
+            <span className="truncate">{value || "Default"}</span>
+            <ChevronDownIcon className="h-3 w-3 text-gray-400" />
+          </div>
+        </MenuHandler>
+        <MenuList className="p-2 border-gray-100 rounded-lg shadow-xl min-w-[180px] max-h-72 overflow-hidden flex flex-col z-[9999]">
+          <div className="mb-2 shrink-0">
+            <input
+              autoFocus
+              type="text"
+              placeholder={placeholder}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="w-full px-3 py-1.5 text-[11px] border border-gray-100 rounded-md focus:border-indigo-500 outline-none font-medium"
+              onKeyDown={(e) => e.stopPropagation()}
+            />
+          </div>
+          <div className="overflow-y-auto flex-1">
+            <MenuItem
+              onClick={() => {
+                onSelect("");
+                setIsOpen(false);
+                setFilter("");
+              }}
+              className="px-3 py-1.5 text-[10px] font-bold text-gray-400 hover:bg-gray-50 uppercase tracking-widest"
+            >
+              Clear / Default
+            </MenuItem>
+            {filteredOptions.map((opt) => (
+              <MenuItem
+                key={opt}
+                onClick={() => {
+                  onSelect(opt);
+                  setIsOpen(false);
+                  setFilter("");
+                }}
+                className={`px-3 py-2 text-[11px] font-bold rounded-lg mb-0.5 ${value === opt ? "bg-indigo-50 text-indigo-600" : "text-gray-700 hover:bg-gray-50"}`}
+                style={{
+                  fontFamily: label.toLowerCase().includes("font")
+                    ? opt
+                    : "inherit",
+                }}
+              >
+                {opt}
+              </MenuItem>
+            ))}
+            {filteredOptions.length === 0 && (
+              <div className="p-4 text-center text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                No matches
+              </div>
+            )}
+          </div>
+        </MenuList>
+      </Menu>
+    </div>
+  );
+};
+
 const StyleControl = ({ control, component, onChange }) => {
   const {
     label,
@@ -360,38 +485,15 @@ const StyleControl = ({ control, component, onChange }) => {
     );
   }
 
-  if (type === "select") {
+  if (name === "fontFamily" || type === "select") {
     return (
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <Typography className="text-[9.5px] font-bold text-gray-900 uppercase tracking-widest w-1/3 truncate">
-          {label}
-        </Typography>
-        <Menu placement="bottom-end">
-          <MenuHandler>
-            <div className="flex-1 cursor-pointer bg-white border border-gray-100 rounded-md px-2 py-1.5 flex items-center justify-between text-[10px] font-bold text-gray-700 hover:border-indigo-400 transition-all shadow-sm">
-              <span>{val || "default"}</span>
-              <ChevronDownIcon className="h-3 w-3 text-gray-400" />
-            </div>
-          </MenuHandler>
-          <MenuList className="p-1 border-gray-100 rounded-lg shadow-xl shadow-gray-200/50 min-w-[120px] max-h-60 overflow-y-auto z-[9999]">
-            <MenuItem
-              onClick={() => onChange(name, "")}
-              className="px-3 py-1.5 text-[10px] font-bold text-gray-500 hover:bg-gray-50 mb-1"
-            >
-              default
-            </MenuItem>
-            {options.map((opt) => (
-              <MenuItem
-                key={opt}
-                onClick={() => onChange(name, opt)}
-                className={`px-3 py-1.5 text-[10px] font-bold ${val === opt ? "bg-indigo-50 text-indigo-600" : "text-gray-700 hover:bg-gray-50"}`}
-              >
-                {opt}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-      </div>
+      <SearchableDropdown
+        label={label}
+        value={val}
+        options={name === "fontFamily" ? GOOGLE_FONTS : options}
+        onSelect={(opt) => onChange(name, opt)}
+        placeholder={`Search ${label.toLowerCase()}...`}
+      />
     );
   }
 
@@ -447,6 +549,8 @@ const RightPanel = () => {
     ? findComponent(currentPage.layout, selectedComponentId)
     : null;
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const toggleSection = (sectionId) => {
     setOpenSections((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
   };
@@ -471,7 +575,7 @@ const RightPanel = () => {
 
   if (!selectedComponent) {
     return (
-      <div className="w-[340px] border-l border-gray-100 bg-white h-[calc(100vh-80px)] flex flex-col items-center justify-center p-8 text-center bg-gray-50/20 shrink-0 z-10 shadow-[-20px_0_40px_-20px_rgba(0,0,0,0.05)]">
+      <div className="w-full bg-white h-[calc(100vh-80px)] flex flex-col items-center justify-center p-8 text-center bg-gray-50/20 shrink-0 z-10">
         <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-indigo-100/50 border border-indigo-50/50">
           <AdjustmentsHorizontalIcon className="h-10 w-10 text-indigo-400 animate-pulse" />
         </div>
@@ -514,7 +618,7 @@ const RightPanel = () => {
   );
 
   return (
-    <div className="w-[340px] border-l border-gray-100 bg-white h-[calc(100vh-80px)] flex flex-col overflow-hidden font-sans shadow-[-20px_0_40px_-20px_rgba(0,0,0,0.08)] shrink-0 z-10">
+    <div className="w-full bg-white h-[calc(100vh-80px)] overflow-hidden flex flex-col shrink-0 font-sans shadow-[-20px_0_40px_-20px_rgba(0,0,0,0.08)] z-10">
       {/* Device Toolbar (Webflow/Framer style) */}
       <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
@@ -568,9 +672,25 @@ const RightPanel = () => {
         ))}
       </div>
 
+      {/* Global Style Search */}
+      {activeTab === "Style" && (
+        <div className="px-5 py-4 border-b border-gray-100 bg-white shrink-0 scroll-mt-20">
+          <div className="relative group">
+            <ViewfinderCircleIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300 group-focus-within:text-indigo-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search properties (e.g. padding, color)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Main Edit Area */}
       <div className="flex-1 overflow-y-auto scrollbar-hide bg-gray-50/10">
-        {/* Style Tab: Loops through our advanced SECTIONS configuration */}
+        {/* Style Tab */}
         {activeTab === "Style" && (
           <div className="pb-32">
             <div className="p-4 bg-indigo-600 text-white flex items-center justify-between shadow-inner">
@@ -601,15 +721,26 @@ const RightPanel = () => {
               </Menu>
             </div>
 
-            {SECTIONS.map((section) => (
+            {SECTIONS.filter((s) => {
+              if (!searchQuery) return true;
+              const matchesTitle = s.title
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+              const matchesControls = s.controls?.some(
+                (c) =>
+                  c.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  c.name.toLowerCase().includes(searchQuery.toLowerCase()),
+              );
+              return matchesTitle || matchesControls;
+            }).map((section) => (
               <div key={section.id}>
                 <SectionHeader
                   section={section}
-                  isOpen={openSections[section.id]}
+                  isOpen={openSections[section.id] || searchQuery.length > 0}
                   onToggle={() => toggleSection(section.id)}
                 />
 
-                {openSections[section.id] && (
+                {(openSections[section.id] || searchQuery.length > 0) && (
                   <div className="p-5 animate-in fade-in duration-300 bg-white">
                     {/* Render standard controls */}
                     {section.controls &&
@@ -624,7 +755,7 @@ const RightPanel = () => {
 
                     {/* Render visual spacing editor specifically for spacing section */}
                     {section.custom && section.id === "spacing" && (
-                      <SpacingVisualizer
+                      <BoxModelEditor
                         component={selectedComponent}
                         onChange={handleStyleChange}
                       />

@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { login, reset } from "../store/authSlice";
 import Logo from "../assets/Logo-2.png";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isError) {
-      alert(message);
+      toast.error(message);
     }
 
     if (isSuccess || user) {
@@ -167,13 +168,18 @@ const Login = () => {
               </Button>
             </form>
 
-            <Typography className="text-center mt-6 text-gray-400 font-bold text-[12px]">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-indigo-600 hover:underline font-bold"
-              >
-                Start building for free
+            <Typography className="text-center mt-6 text-gray-400 font-bold text-[12px] flex flex-col gap-2">
+              <div>
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-indigo-600 hover:underline font-bold"
+                >
+                  Start building for free
+                </Link>
+              </div>
+              <Link to="/about" className="text-gray-500 hover:text-indigo-600 font-bold text-[10px] mt-2">
+                Learn more About Platform
               </Link>
             </Typography>
           </div>

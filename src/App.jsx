@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -23,6 +24,7 @@ import AIPromptBuilder from "./pages/AIPromptBuilder";
 import About from "./pages/About";
 import Pricing from "./pages/Pricing";
 import Help from "./pages/Help";
+import LivePreview from "./pages/LivePreview";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -54,6 +56,34 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+      <Toaster 
+        position="bottom-left"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1e293b',
+            color: '#ffffff',
+            borderRadius: '1.25rem',
+            padding: '1rem 1.5rem',
+            fontWeight: '600',
+            fontSize: '14px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#818cf8',
+              secondary: '#1e293b',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#f87171',
+              secondary: '#1e293b',
+            },
+          },
+        }}
+      />
       <Routes>
         {/* Public Routes */}
         <Route
@@ -152,7 +182,7 @@ function App() {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute dRoute>
+            <ProtectedRoute>
               <ProjectSettings />
             </ProtectedRoute>
           }
@@ -172,6 +202,15 @@ function App() {
           element={
             <ProtectedRoute>
               <AIPromptBuilder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/preview/:websiteId"
+          element={
+            <ProtectedRoute>
+              <LivePreview />
             </ProtectedRoute>
           }
         />

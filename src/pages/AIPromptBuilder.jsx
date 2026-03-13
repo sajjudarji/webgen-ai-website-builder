@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Typography, Button, Textarea, Menu, MenuHandler, MenuList, MenuItem } from "@material-tailwind/react";
+import {
+  Typography,
+  Button,
+  Textarea,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  Dialog,
+} from "@material-tailwind/react";
 import {
   PaperAirplaneIcon,
   ComputerDesktopIcon,
@@ -33,13 +42,18 @@ const PreviewRenderer = ({ component, primaryColor }) => {
   switch (type) {
     case "section":
       return <section style={commonStyles}>{renderChildren()}</section>;
+    case "container":
+      return (
+        <div className="max-w-7xl mx-auto w-full px-6" style={commonStyles}>
+          {renderChildren()}
+        </div>
+      );
     case "div":
     case "flex":
     case "grid":
-    case "container":
       return (
         <div
-          className={`${type === "container" ? "max-w-6xl mx-auto" : ""} w-full`}
+          className={`w-full ${type === "flex" ? "flex flex-col md:flex-row gap-6" : type === "grid" ? "grid grid-cols-1 md:grid-cols-3 gap-6" : ""}`}
           style={commonStyles}
         >
           {renderChildren()}
@@ -70,7 +84,7 @@ const PreviewRenderer = ({ component, primaryColor }) => {
         <img
           src={props.src}
           alt={props.alt}
-          style={{ width: "100%", ...commonStyles }}
+          style={{ width: "100%", borderRadius: "inherit", ...commonStyles }}
         />
       );
     case "hero":
@@ -80,11 +94,103 @@ const PreviewRenderer = ({ component, primaryColor }) => {
             ...commonStyles,
             backgroundColor: commonStyles.backgroundColor || "#111827",
             color: commonStyles.color || "#FFFFFF",
+            minHeight: "400px",
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          <div className="max-w-4xl mx-auto relative z-10 w-full min-h-[300px] flex flex-col items-center justify-center">
+          <div className="max-w-7xl mx-auto relative z-10 w-full px-8">
             {renderChildren()}
           </div>
+        </div>
+      );
+    case "navbar":
+    case "footer":
+    case "logo-bar":
+      return (
+        <div
+          className="w-full relative"
+          style={{
+            ...commonStyles,
+            padding: commonStyles.padding || "24px 80px",
+            backgroundColor:
+              commonStyles.backgroundColor ||
+              (type === "logo-bar" ? "transparent" : "#FFFFFF"),
+          }}
+        >
+          {type === "navbar" && (
+            <div className="flex justify-between items-center w-full">
+              <div className="font-black text-2xl text-indigo-600 tracking-tighter">
+                {" "}
+                {props.logo || "LOGO"}{" "}
+              </div>
+              <div className="flex gap-8 text-[12px] font-bold text-gray-500 items-center">
+                <span>Products</span>
+                <span>Pricing</span>
+                <span className="bg-indigo-600 text-white px-6 py-2 rounded-xl shadow-lg">
+                  Join
+                </span>
+              </div>
+            </div>
+          )}
+          {type === "logo-bar" && (
+            <div className="flex justify-center flex-wrap gap-12 opacity-30 grayscale text-[18px] font-black italic py-10">
+              <span>Klarna.</span>
+              <span>COINBASE</span>
+              <span>instacart</span>
+              <span>stripe</span>
+            </div>
+          )}
+          <div className="w-full">{renderChildren()}</div>
+          {type === "footer" && (
+            <div className="text-center py-12 text-[11px] text-gray-400 font-bold uppercase tracking-widest border-t border-gray-100 mt-12">
+              {props.text || "© 2026 Brand. All rights reserved."}
+            </div>
+          )}
+        </div>
+      );
+    case "card":
+      const isPayment = props.type === "payment";
+      return (
+        <div
+          className="transition-all hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
+          style={{
+            background: "#FFFFFF",
+            borderRadius: "32px",
+            padding: "40px",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.03)",
+            border: "1px solid #F1F5F9",
+            ...commonStyles,
+          }}
+        >
+          {isPayment ? (
+            <div className="space-y-6">
+              <div className="flex justify-between items-start">
+                <div className="w-12 h-12 bg-indigo-50 rounded-xl" />
+                <div className="text-right">
+                  <div className="h-2 w-16 bg-gray-100 rounded ml-auto mb-2" />
+                  <div className="h-6 w-32 bg-gray-200 rounded" />
+                </div>
+              </div>
+              <div className="h-40 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl shadow-xl p-6 flex flex-col justify-between overflow-hidden relative">
+                <div className="w-10 h-10 bg-white/20 rounded-full" />
+                <div className="h-4 w-40 bg-white/30 rounded" />
+              </div>
+              <div className="h-12 bg-indigo-900 rounded-2xl flex items-center justify-center font-bold text-white text-xs">
+                Pay Securely
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h3 className="font-black text-xl text-gray-900">
+                {props.title || "Card Title"}
+              </h3>
+              <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                {props.content || "Card description text..."}
+              </p>
+              {renderChildren()}
+            </div>
+          )}
         </div>
       );
     default:
@@ -106,7 +212,9 @@ const AIPromptBuilder = () => {
   const [glassBlur, setGlassBlur] = useState(12);
   const [panelOpacity, setPanelOpacity] = useState(40);
   const [primaryColor, setPrimaryColor] = useState("#5046e5");
-  const [selectedModel, setSelectedModel] = useState("gemini-1.5-flash");
+  const [selectedModel, setSelectedModel] = useState("gemini-2.0-flash");
+  const [viewport, setViewport] = useState("desktop");
+  const [showFullPreview, setShowFullPreview] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -199,10 +307,10 @@ const AIPromptBuilder = () => {
       ]);
 
       const payload = {
-        businessName: "AI Architect Gen",
+        businessName: userPrompt.split(' ').slice(0, 3).join(' '),
         description: userPrompt,
-        colorPreference: "indigo",
-        layoutStyle: "modern",
+        colorPreference: primaryColor,
+        layoutStyle: "creative",
         model: selectedModel,
       };
 
@@ -224,7 +332,7 @@ const AIPromptBuilder = () => {
           ...prev,
           {
             role: "assistant",
-            text: "I've generated a premium layout based on your prompt. The live preview is ready. Should we refine the typography or adjust the accent colors?",
+            text: "I've generated a premium architecture. You can switch viewports or open the live preview to inspect it.",
           },
         ]);
       }
@@ -287,18 +395,29 @@ const AIPromptBuilder = () => {
             <Menu placement="bottom-end">
               <MenuHandler>
                 <div className="px-3 py-1.5 cursor-pointer bg-indigo-100/50 text-indigo-600 rounded-lg border border-indigo-100 flex items-center justify-between shadow-sm outline-none min-w-[130px]">
-                  <span className="text-[9px] uppercase font-black tracking-widest">{modelLabels[selectedModel]}</span>
+                  <span className="text-[9px] uppercase font-black tracking-widest">
+                    {modelLabels[selectedModel]}
+                  </span>
                   <ChevronDownIcon strokeWidth={2.5} className="h-3 w-3 ml-2" />
                 </div>
               </MenuHandler>
               <MenuList className="p-1 min-w-[150px] border-white/50 bg-white/90 backdrop-blur-xl shadow-xl z-[9999]">
-                <MenuItem onClick={() => setSelectedModel("gemini-1.5-flash")} className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600">
+                <MenuItem
+                  onClick={() => setSelectedModel("gemini-1.5-flash")}
+                  className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600"
+                >
                   Gemini 1.5 Flash
                 </MenuItem>
-                <MenuItem onClick={() => setSelectedModel("gemini-1.5-pro")} className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600">
+                <MenuItem
+                  onClick={() => setSelectedModel("gemini-1.5-pro")}
+                  className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600"
+                >
                   Gemini 1.5 Pro
                 </MenuItem>
-                <MenuItem disabled className="flex items-center gap-2 text-[11px] font-bold text-gray-400">
+                <MenuItem
+                  disabled
+                  className="flex items-center gap-2 text-[11px] font-bold text-gray-400"
+                >
                   GPT-4o (Coming Soon)
                 </MenuItem>
               </MenuList>
@@ -334,7 +453,7 @@ const AIPromptBuilder = () => {
 
             {isGenerating && (
               <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase bg-red-500 text-gray-800 tracking-widest px-2">
+                <p className="text-[9px] font-black uppercase  text-gray-800 tracking-widest px-2">
                   Architect AI
                 </p>
                 <div className="bg-white/60 backdrop-blur-md p-4 rounded-2xl border border-white rounded-tl-sm shadow-sm flex items-center gap-3">
@@ -394,19 +513,29 @@ const AIPromptBuilder = () => {
                 <SparklesSolid className="h-4 w-4" />
               </div> */}
               <div className="flex items-center gap-3 border-l border-gray-200 pl-4">
-                <ComputerDesktopIcon className="h-5 w-5 text-gray-400 cursor-pointer hover:text-indigo-600 transition-colors" />
-                <DeviceTabletIcon className="h-4 w-4 text-gray-300 cursor-pointer hover:text-indigo-600 transition-colors" />
-                <DevicePhoneMobileIcon className="h-4 w-4 text-gray-300 cursor-pointer hover:text-indigo-600 transition-colors" />
+                <ComputerDesktopIcon
+                  onClick={() => setViewport("desktop")}
+                  className={`h-5 w-5 cursor-pointer transition-all ${viewport === "desktop" ? "text-indigo-600" : "text-gray-300 hover:text-gray-400"}`}
+                />
+                <DeviceTabletIcon
+                  onClick={() => setViewport("tablet")}
+                  className={`h-4 w-4 cursor-pointer transition-all ${viewport === "tablet" ? "text-indigo-600" : "text-gray-300 hover:text-gray-400"}`}
+                />
+                <DevicePhoneMobileIcon
+                  onClick={() => setViewport("mobile")}
+                  className={`h-4 w-4 cursor-pointer transition-all ${viewport === "mobile" ? "text-indigo-600" : "text-gray-300 hover:text-gray-400"}`}
+                />
               </div>
               <div className="flex items-center gap-3 border-l border-gray-200 pl-4">
-                <Typography className="text-[11px] font-black uppercase text-gray-400 tracking-widest">
-                  Viewport
+                <Typography className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
+                  {viewport} Mode
                 </Typography>
               </div>
             </div>
             <Button
               variant="text"
               size="sm"
+              onClick={() => setShowFullPreview(true)}
               className="hidden lg:flex items-center gap-2 rounded-xl text-gray-600 hover:bg-gray-50 capitalize font-bold"
             >
               <EyeIcon className="h-4 w-4" /> Live Preview
@@ -414,7 +543,15 @@ const AIPromptBuilder = () => {
           </div>
 
           {/* Browser Frame */}
-          <div className="flex-1 w-full max-w-[900px] bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-gray-100 flex flex-col overflow-hidden">
+          <div
+            className={`flex-1 w-full transition-all duration-500 bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-gray-100 flex flex-col overflow-hidden ${
+              viewport === "mobile"
+                ? "max-w-[375px]"
+                : viewport === "tablet"
+                  ? "max-w-[768px]"
+                  : "max-w-[900px]"
+            }`}
+          >
             {/* Browser Header */}
             <div className="h-12 bg-white/50 flex items-center px-6 gap-4 border-b border-gray-50">
               <div className="flex gap-1.5">
@@ -485,94 +622,68 @@ const AIPromptBuilder = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Panel: Global Styles */}
-        <div
-          className="w-[300px] shrink-0 flex flex-col p-6 rounded-[2.5rem] border border-white/50 shadow-sm h-[calc(100vh-100px)] overflow-y-auto scrollbar-hide"
-          style={panelStyle}
-        >
-          <div className="flex items-center gap-2 mb-10">
-            <AdjustmentsHorizontalIcon className="h-5 w-5 text-gray-900" />
-            <Typography className="text-gray-900 font-black text-[15px]">
-              Global Styles
-            </Typography>
-          </div>
-
-          <div className="space-y-8 flex-1">
-            {/* Sliders */}
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  <span>Glass Blur</span>
-                  <span className="text-gray-900">{glassBlur}px</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="40"
-                  value={glassBlur}
-                  onChange={(e) => setGlassBlur(e.target.value)}
-                  className="w-full accent-indigo-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+      {/* Full Screen Live Preview Dialog */}
+      <Dialog
+        open={showFullPreview}
+        handler={() => setShowFullPreview(false)}
+        size="xxl"
+        className="bg-white overflow-hidden p-0 rounded-none h-screen w-screen"
+      >
+        <div className="h-screen w-screen flex flex-col bg-white overflow-hidden">
+          <div className="h-16 border-b border-gray-100 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md sticky top-0 z-[100]">
+            <div className="flex items-center gap-6">
+              <Typography className="font-black text-indigo-600 tracking-tighter">
+                PREVIEW MODE
+              </Typography>
+              <div className="h-6 w-px bg-gray-100" />
+              <div className="flex items-center gap-4">
+                <ComputerDesktopIcon
+                  onClick={() => setViewport("desktop")}
+                  className={`h-5 w-5 cursor-pointer ${viewport === "desktop" ? "text-indigo-600" : "text-gray-300"}`}
                 />
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  <span>Panel Opacity</span>
-                  <span className="text-gray-900">{panelOpacity}%</span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={panelOpacity}
-                  onChange={(e) => setPanelOpacity(e.target.value)}
-                  className="w-full accent-indigo-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                <DeviceTabletIcon
+                  onClick={() => setViewport("tablet")}
+                  className={`h-4 w-4 cursor-pointer ${viewport === "tablet" ? "text-indigo-600" : "text-gray-300"}`}
+                />
+                <DevicePhoneMobileIcon
+                  onClick={() => setViewport("mobile")}
+                  className={`h-4 w-4 cursor-pointer ${viewport === "mobile" ? "text-indigo-600" : "text-gray-300"}`}
                 />
               </div>
             </div>
-
-            {/* Primary Palette */}
-            <div className="space-y-4 pt-4 border-t border-gray-200/50">
-              <Typography className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Primary Palette
-              </Typography>
-              <div className="flex items-center justify-between px-1">
-                {paletteColors.map((color, i) => (
-                  <div
-                    key={color.hex}
-                    onClick={() => setPrimaryColor(color.hex)}
-                    className={`w-10 h-10 rounded-[1.1rem] ${color.bg} cursor-pointer hover:scale-110 transition-transform ${primaryColor === color.hex ? "ring-4 ring-indigo-200 shadow-lg scale-110" : "opacity-80"} hover:opacity-100`}
+            <Button
+              onClick={() => setShowFullPreview(false)}
+              variant="text"
+              color="gray"
+              className="rounded-xl flex items-center gap-2"
+            >
+              Close Preview
+            </Button>
+          </div>
+          <div className="flex-1 overflow-y-auto bg-gray-50/50 p-12 flex justify-center no-scrollbar">
+            <div
+              className={`w-full bg-white shadow-2xl transition-all duration-500 min-h-full ${
+                viewport === "mobile"
+                  ? "max-w-[390px]"
+                  : viewport === "tablet"
+                    ? "max-w-[768px]"
+                    : "max-w-full"
+              }`}
+            >
+              {generatedLayout &&
+                generatedLayout.map((comp) => (
+                  <PreviewRenderer
+                    key={comp.id}
+                    component={comp}
+                    primaryColor={primaryColor}
                   />
                 ))}
-              </div>
-            </div>
-
-            {/* Structure */}
-            <div className="space-y-4 pt-4 border-t border-gray-200/50">
-              <Typography className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Structure
-              </Typography>
-
-              <div className="space-y-2 mt-4">
-                {generatedLayout && generatedLayout.length > 0 ? (
-                  renderStructure(generatedLayout)
-                ) : (
-                  <div className="text-[11px] font-medium text-gray-400 text-center py-6 border border-dashed border-gray-300 rounded-2xl">
-                    Generate a layout to view structure
-                  </div>
-                )}
-              </div>
             </div>
           </div>
-
-          <Button
-            variant="outlined"
-            className="mt-8 border-gray-200 text-gray-600 rounded-2xl py-4 normal-case font-black text-[11px] tracking-widest flex items-center justify-center gap-2 hover:bg-white shadow-none"
-          >
-            <AdjustmentsHorizontalIcon className="h-4 w-4" /> Advanced Config
-          </Button>
         </div>
-      </div>
+      </Dialog>
     </div>
   );
 };

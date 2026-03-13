@@ -2,6 +2,7 @@ import React from "react";
 import { Typography, Button, Card, CardBody } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { SparklesIcon, CheckIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
+import PublicNavbar from "../components/PublicNavbar";
 import AppFooter from "../components/AppFooter";
 
 const Pricing = () => {
@@ -36,17 +37,7 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* Navbar Minimal */}
-      <nav className="h-16 px-10 flex items-center justify-between border-b border-gray-100 bg-white sticky top-0 z-[100]">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black uppercase text-xs tracking-tighter shadow-lg shadow-indigo-100 italic">SF</div>
-          <Typography className="text-gray-900 font-extrabold tracking-tighter text-xl">SiteFlow</Typography>
-        </div>
-        <div className="flex items-center gap-10 text-xs font-black text-gray-400 uppercase tracking-widest leading-none pt-1">
-           <Link to="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-           <Link to="/about" className="hover:text-indigo-600 transition-colors">About Us</Link>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Pricing Header */}
       <div className="max-w-7xl mx-auto px-10 pt-32 pb-20 text-center space-y-6">

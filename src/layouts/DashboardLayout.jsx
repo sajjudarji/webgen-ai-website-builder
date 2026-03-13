@@ -154,7 +154,10 @@ const DashboardLayout = ({ children }) => {
         </nav>
 
         <div className="px-4 mt-auto mb-6">
-          <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer group">
+          <div 
+            onClick={() => navigate("/pricing")}
+            className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer group border border-transparent hover:border-indigo-100"
+          >
             <Avatar
               size="sm"
               src={`https://ui-avatars.com/api/?name=${user?.name || "Alex Rivers"}&background=6366f1&color=fff&bold=true`}
@@ -165,7 +168,7 @@ const DashboardLayout = ({ children }) => {
                 {user?.name || "Alex Rivers"}
               </Typography>
               <Typography className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                Pro Plan
+                {user?.role || "Pro Plan"}
               </Typography>
             </div>
           </div>

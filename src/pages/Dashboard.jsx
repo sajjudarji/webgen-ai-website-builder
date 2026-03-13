@@ -29,6 +29,8 @@ import {
   EllipsisHorizontalIcon,
   SparklesIcon,
   TrashIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -36,20 +38,31 @@ const Dashboard = () => {
   const [websites, setWebsites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalWebsites, setTotalWebsites] = useState(0);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWebsites = async () => {
+      setIsLoading(true);
       try {
         const config = {
           headers: { Authorization: `Bearer ${user.token}` },
+          params: {
+            status: activeTab === "all" ? "" : activeTab === "drafts" ? "draft" : activeTab,
+            page: currentPage,
+            limit: 5
+          }
         };
         const res = await axios.get(
           "http://localhost:5000/api/websites",
           config,
         );
         setWebsites(res.data.data);
+        setTotalPages(res.data.pages || 1);
+        setTotalWebsites(res.data.total || 0);
       } catch (error) {
         console.error("Error fetching websites:", error);
       } finally {
@@ -58,7 +71,12 @@ const Dashboard = () => {
     };
 
     fetchWebsites();
-  }, [user.token]);
+  }, [user.token, activeTab, currentPage]);
+
+  // Reset page on tab change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
 
   const deleteWebsite = async (id) => {
     if (window.confirm("Are you sure you want to delete this website?")) {
@@ -75,13 +93,13 @@ const Dashboard = () => {
   };
 
   const tabs = [
-    { id: "all", label: "All Sites", count: websites.length },
+    { id: "all", label: "All Sites", count: totalWebsites },
     {
       id: "published",
       label: "Published",
-      count: Math.ceil(websites.length * 0.7),
+      count: "-",
     },
-    { id: "drafts", label: "Drafts", count: Math.floor(websites.length * 0.3) },
+    { id: "drafts", label: "Drafts", count: "-" },
     { id: "archived", label: "Archived", count: 0 },
   ];
 
@@ -364,6 +382,64 @@ const Dashboard = () => {
                   </CardBody>
                 </Card>
               ))}
+            </div>
+          )}
+
+          {/* Pagination Section */}
+          {!isLoading && totalWebsites > 5 && (
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 px-4 bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+              <div className="flex flex-col">
+                <Typography className="text-sm font-bold text-gray-900">
+                  Showing <span className="text-indigo-600">{(currentPage - 1) * 5 + 1}</span> to <span className="text-indigo-600">{Math.min(currentPage * 5, totalWebsites)}</span> of <span className="text-indigo-600">{totalWebsites}</span> items
+                </Typography>
+                <Typography className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1">
+                  Page {currentPage} of {totalPages}
+                </Typography>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <IconButton
+                  variant="text"
+                  className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeftIcon className="h-5 w-5 stroke-[2.5]" />
+                </IconButton>
+
+                <div className="flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => {
+                    const pageNum = i + 1;
+                    if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${
+                            currentPage === pageNum
+                              ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100"
+                              : "text-gray-400 hover:text-indigo-600 hover:bg-indigo-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if ((pageNum === 2 && currentPage > 3) || (pageNum === totalPages - 1 && currentPage < totalPages - 2)) {
+                      return <span key={pageNum} className="text-gray-300 px-1">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <IconButton
+                  variant="text"
+                  className="rounded-xl hover:bg-indigo-50 text-gray-500 disabled:opacity-30"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRightIcon className="h-5 w-5 stroke-[2.5]" />
+                </IconButton>
+              </div>
             </div>
           )}
         </div>

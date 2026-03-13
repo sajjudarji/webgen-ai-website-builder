@@ -18,6 +18,7 @@ import {
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { register, reset } from "../store/authSlice";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ const Register = () => {
 
   useEffect(() => {
     if (isError) {
-      alert(message);
+      toast.error(message);
     }
 
     if (isSuccess || user) {

@@ -34,14 +34,18 @@ import {
   RocketLaunchIcon,
   CubeIcon,
   TagIcon,
+  DocumentCheckIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
+import toast from "react-hot-toast";
 import {
   setDeviceView,
   setCurrentPage,
   undo,
   redo,
   addPageToList,
+  removePageFromList,
 } from "../store/builderSlice";
 import { logout } from "../store/authSlice";
 import { UserIcon, PowerIcon } from "@heroicons/react/24/outline";
@@ -92,6 +96,7 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
 
       if (res.data.success) {
         dispatch(addPageToList(res.data.data));
+        dispatch(setCurrentPage(res.data.data));
         setNewPageData({
           name: "",
           type: "Landing",
@@ -103,6 +108,36 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
       }
     } catch (error) {
       console.error("Error creating page:", error);
+      toast.error("Cloud engine error. Try again.");
+    }
+  };
+
+  const handleDeletePage = async (e, pageId) => {
+    e.stopPropagation();
+
+    if (pages.length <= 1) {
+      toast.error("Project must have at least one page.");
+      return;
+    }
+
+    const pageToDelete = pages.find((p) => p._id === pageId);
+    if (pageToDelete?.isHome) {
+      toast.error("Security alert: Home page cannot be deleted.");
+      return;
+    }
+
+    if (window.confirm("Are you sure? This will permanently delete the page.")) {
+      const deletePromise = (async () => {
+        const config = { headers: { Authorization: `Bearer ${user.token}` } };
+        await axios.delete(`http://localhost:5000/api/pages/${pageId}`, config);
+        dispatch(removePageFromList(pageId));
+      })();
+
+      toast.promise(deletePromise, {
+        loading: "Purging page from cloud...",
+        success: "Page deleted successfully.",
+        error: "Failed to delete page.",
+      });
     }
   };
 
@@ -149,12 +184,34 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
                   <MenuItem
                     key={page._id}
                     onClick={() => dispatch(setCurrentPage(page))}
-                    className={`rounded-xl py-3 flex items-center gap-3 transition-colors ${currentPage?._id === page._id ? "bg-indigo-50 text-indigo-700 font-bold" : "hover:bg-gray-50 text-gray-600"}`}
+                    className={`rounded-xl py-2.5 px-3 flex items-center justify-between transition-all group ${
+                      currentPage?._id === page._id
+                        ? "bg-indigo-50 text-indigo-700 font-bold"
+                        : "hover:bg-gray-50 text-gray-600"
+                    }`}
                   >
-                    <div
-                      className={`w-2 h-2 rounded-full ${currentPage?._id === page._id ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" : "bg-gray-200"}`}
-                    ></div>
-                    <span className="text-sm tracking-tight">{page.name}</span>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentPage?._id === page._id
+                            ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"
+                            : "bg-gray-200"
+                        }`}
+                      ></div>
+                      <span className="text-sm tracking-tight">{page.name}</span>
+                    </div>
+
+                    {!page.isHome && (
+                      <IconButton
+                        size="sm"
+                        variant="text"
+                        color="red"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+                        onClick={(e) => handleDeletePage(e, page._id)}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </IconButton>
+                    )}
                   </MenuItem>
                 ))}
                 <div className="p-1 mt-1">
@@ -236,27 +293,51 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
             </div>
           )}
 
+          <Tooltip content="Live View" placement="bottom">
+            <IconButton
+              variant="text"
+              color="indigo"
+              onClick={() =>
+                window.open(`/preview/${currentWebsite._id}`, "_blank")
+              }
+              className="rounded-xl w-10 h-10 hover:bg-indigo-50"
+            >
+              <EyeIcon className="h-5 w-5 stroke-[2.5]" />
+            </IconButton>
+          </Tooltip>
+
           <Button
             variant="text"
             size="sm"
             onClick={() => setIsPreview(!isPreview)}
             className={`min-w-[130px] rounded-xl font-bold px-4 py-2.5 normal-case transition-all flex items-center justify-center gap-2 border ${isPreview ? "bg-indigo-50 border-indigo-200 text-indigo-700 shadow-sm" : "text-gray-600 border-transparent hover:bg-gray-50 hover:border-gray-200"}`}
           >
-            <EyeIcon className="h-5 w-5 shrink-0" />{" "}
-            {isPreview ? "Edit Design" : "Preview"}
+            <SparklesIcon className="h-5 w-5 shrink-0" />{" "}
+            {isPreview ? "Exit Preview" : "Preview Mode"}
           </Button>
+          <Button
+            onClick={onSave}
+            variant="text"
+            size="sm"
+            disabled={isSaving}
+            className={`min-w-[100px] rounded-xl font-bold px-4 py-2.5 normal-case transition-all flex items-center justify-center gap-2 border border-gray-100 hover:bg-white hover:border-gray-200 text-gray-700 ${isSaving ? "opacity-50 cursor-wait" : ""}`}
+          >
+            <DocumentCheckIcon className="h-5 w-5 shrink-0 text-indigo-500" />
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+
           <Button
             onClick={onSave}
             size="sm"
             disabled={isSaving}
-            className={`min-w-[130px] bg-indigo-600 rounded-xl px-4 py-3 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 normal-case font-black text-xs tracking-widest transition-all flex items-center justify-center gap-2 transform ${isSaving ? "opacity-80 cursor-wait" : "active:scale-95"}`}
+            className={`min-w-[120px] bg-indigo-600 rounded-xl px-4 py-3 shadow-lg shadow-indigo-100 hover:shadow-indigo-200 normal-case font-black text-xs tracking-widest transition-all flex items-center justify-center gap-2 transform ${isSaving ? "opacity-80 cursor-wait" : "active:scale-95"}`}
           >
             {isSaving ? (
               <div className="h-4 w-4 border-2 border-white/40 border-t-white rounded-full animate-spin shrink-0"></div>
             ) : (
               <RocketLaunchIcon className="h-4 w-4 shrink-0" />
             )}
-            {isSaving ? "Saving..." : "Publish"}
+            {isSaving ? "Publishing..." : "Publish"}
           </Button>
 
           <div className="h-8 w-px bg-gray-100 mx-1"></div>
@@ -313,7 +394,7 @@ const BuilderTopBar = ({ onSave, isPreview, setIsPreview, isSaving }) => {
       <Dialog
         open={isPageDialogOpen}
         handler={() => setIsPageDialogOpen(false)}
-        size="md"
+        size="lg"
         className="rounded-[2.5rem] shadow-2xl p-6 overflow-hidden bg-white"
       >
         <DialogHeader className="flex flex-col items-start gap-1 pb-4">

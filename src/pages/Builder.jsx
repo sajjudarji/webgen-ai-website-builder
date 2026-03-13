@@ -8,15 +8,33 @@ import LeftPanel from "../builder/LeftPanel";
 import RightPanel from "../builder/RightPanel";
 import Canvas from "../builder/Canvas";
 import AIAssistant from "../ai/AIAssistant";
+import { 
+  toggleLeftPanel, 
+  toggleRightPanel, 
+  setIsPreview 
+} from "../store/builderSlice";
+import { 
+  ChevronLeftIcon, 
+  ChevronRightIcon, 
+  Bars3Icon,
+  AdjustmentsVerticalIcon
+} from "@heroicons/react/24/outline";
+import { IconButton } from "@material-tailwind/react";
+import toast from "react-hot-toast";
 
 const Builder = () => {
   const { websiteId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { currentWebsite, currentPage } = useSelector((state) => state.builder);
+  const { 
+    currentWebsite, 
+    currentPage, 
+    isPreview,
+    leftPanelCollapsed,
+    rightPanelCollapsed
+  } = useSelector((state) => state.builder);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPreview, setIsPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedLayoutStr, setLastSavedLayoutStr] = useState(null);
 
@@ -95,34 +113,41 @@ const Builder = () => {
         },
       };
 
-      // Save the current page
-      if (currentPage) {
+      const savePromise = (async () => {
+        // Save the current page
+        if (currentPage) {
+          await axios.put(
+            `http://localhost:5000/api/pages/${currentPage._id}`,
+            {
+              layout: currentPage.layout,
+              name: currentPage.name,
+              slug: currentPage.slug,
+            },
+            config,
+          );
+        }
+
+        // Save website metadata/settings
         await axios.put(
-          `http://localhost:5000/api/pages/${currentPage._id}`,
+          `http://localhost:5000/api/websites/${websiteId}`,
           {
-            layout: currentPage.layout,
-            name: currentPage.name,
-            slug: currentPage.slug,
+            name: currentWebsite.name,
+            description: currentWebsite.description,
+            settings: currentWebsite.settings,
           },
           config,
         );
-      }
+      })();
 
-      // Save website metadata/settings
-      await axios.put(
-        `http://localhost:5000/api/websites/${websiteId}`,
-        {
-          name: currentWebsite.name,
-          description: currentWebsite.description,
-          settings: currentWebsite.settings,
-        },
-        config,
-      );
+      toast.promise(savePromise, {
+        loading: 'Syncing your changes...',
+        success: 'Project saved successfully!',
+        error: 'Cloud sync failed. Please try again.',
+      });
 
-      alert("Website saved successfully!");
     } catch (error) {
       console.error("Error saving website:", error);
-      alert("Failed to save website progress.");
+      toast.error("An unexpected error occurred.");
     }
   };
 
@@ -142,13 +167,55 @@ const Builder = () => {
       <BuilderTopBar
         onSave={saveWebsite}
         isPreview={isPreview}
-        setIsPreview={setIsPreview}
+        setIsPreview={(val) => dispatch(setIsPreview(val))}
         isSaving={isSaving}
       />
       <div className="flex flex-1 overflow-hidden relative">
-        {!isPreview && <LeftPanel />}
+        {/* Left Panel with Collapse Logic */}
+        {!isPreview && (
+          <div className={`${leftPanelCollapsed ? "w-0 overflow-hidden" : "w-[300px]"} transition-all duration-500 ease-in-out border-r border-gray-100 shrink-0`}>
+             <LeftPanel />
+          </div>
+        )}
+
+        {/* Floating Toggle for Left Panel */}
+        {!isPreview && (
+          <div className={`absolute left-0 top-4 z-[60] transition-all duration-500 ${leftPanelCollapsed ? "translate-x-0" : "translate-x-[290px]"}`}>
+            <IconButton
+              size="sm"
+              variant="white"
+              onClick={() => dispatch(toggleLeftPanel())}
+              className="rounded-full shadow-2xl border border-gray-100 hover:scale-110 active:scale-95 bg-white text-indigo-600"
+            >
+              {leftPanelCollapsed ? <Bars3Icon className="h-4 w-4 stroke-[3]" /> : <ChevronLeftIcon className="h-4 w-4 stroke-[3]" />}
+            </IconButton>
+          </div>
+        )}
+
+        {/* Main Canvas Area */}
         <Canvas />
-        {!isPreview && <RightPanel />}
+
+        {/* Floating Toggle for Right Panel */}
+        {!isPreview && (
+          <div className={`absolute right-0 top-4 z-[60] transition-all duration-500 ${rightPanelCollapsed ? "translate-x-0" : "-translate-x-[330px]"}`}>
+             <IconButton
+               size="sm"
+               variant="white"
+               onClick={() => dispatch(toggleRightPanel())}
+               className="rounded-full shadow-2xl border border-gray-100 hover:scale-110 active:scale-95 bg-white text-indigo-600"
+             >
+               {rightPanelCollapsed ? <AdjustmentsVerticalIcon className="h-4 w-4 stroke-[3]" /> : <ChevronRightIcon className="h-4 w-4 stroke-[3]" />}
+             </IconButton>
+          </div>
+        )}
+
+        {/* Right Panel with Collapse Logic */}
+        {!isPreview && (
+          <div className={`${rightPanelCollapsed ? "w-0 overflow-hidden" : "w-[340px]"} transition-all duration-500 ease-in-out border-l border-gray-100 shrink-0`}>
+            <RightPanel />
+          </div>
+        )}
+        
         {!isPreview && <AIAssistant />}
       </div>
     </div>

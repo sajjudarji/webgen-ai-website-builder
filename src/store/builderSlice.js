@@ -9,6 +9,9 @@ const initialState = {
   future: [], // Stack for redo
   deviceView: "desktop", // desktop, tablet, mobile
   isLoading: false,
+  isPreview: false,
+  leftPanelCollapsed: false,
+  rightPanelCollapsed: false,
 };
 
 export const builderSlice = createSlice({
@@ -28,6 +31,7 @@ export const builderSlice = createSlice({
       state.currentPage = action.payload;
       state.history = [];
       state.future = [];
+      state.selectedComponentId = null;
     },
     setDeviceView: (state, action) => {
       state.deviceView = action.payload;
@@ -143,6 +147,7 @@ export const builderSlice = createSlice({
       state.currentPage = action.payload;
       state.history = [];
       state.future = [];
+      state.selectedComponentId = null;
     },
     setPageLayout: (state, action) => {
       if (state.currentPage) {
@@ -151,6 +156,21 @@ export const builderSlice = createSlice({
         );
         state.currentPage.layout = action.payload;
         state.future = [];
+      }
+    },
+    setIsPreview: (state, action) => {
+      state.isPreview = action.payload;
+    },
+    toggleLeftPanel: (state) => {
+      state.leftPanelCollapsed = !state.leftPanelCollapsed;
+    },
+    toggleRightPanel: (state) => {
+      state.rightPanelCollapsed = !state.rightPanelCollapsed;
+    },
+    removePageFromList: (state, action) => {
+      state.pages = state.pages.filter((p) => p._id !== action.payload);
+      if (state.currentPage?._id === action.payload) {
+        state.currentPage = state.pages.find((p) => p.isHome) || state.pages[0] || null;
       }
     },
   },
@@ -170,6 +190,10 @@ export const {
   reorderComponents,
   addPageToList,
   setPageLayout,
+  setIsPreview,
+  toggleLeftPanel,
+  toggleRightPanel,
+  removePageFromList,
 } = builderSlice.actions;
 
 export default builderSlice.reducer;

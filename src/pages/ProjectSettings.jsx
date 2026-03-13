@@ -33,6 +33,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import DashboardLayout from "../layouts/DashboardLayout";
+import toast from "react-hot-toast";
 
 const ProjectSettings = () => {
   const { id } = useParams();
@@ -65,6 +66,29 @@ const ProjectSettings = () => {
     };
     fetchWebsite();
   }, [id, user.token]);
+
+  const handleSave = async () => {
+    const savePromise = (async () => {
+      const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+      };
+      // For now, we update the main website record
+      await axios.put(
+        `http://localhost:5000/api/websites/${id}`,
+        {
+          name: website.name,
+          // Add other updated fields here as the UI implements them
+        },
+        config,
+      );
+    })();
+
+    toast.promise(savePromise, {
+      loading: 'Saving changes...',
+      success: 'Settings updated successfully!',
+      error: 'Failed to save settings.',
+    });
+  };
 
   const tabs = [
     { id: "general", label: "General" },
@@ -319,7 +343,10 @@ const ProjectSettings = () => {
               >
                 Discard
               </Button>
-              <Button className="bg-indigo-600 rounded-xl px-12 py-4 shadow-xl shadow-indigo-100 normal-case font-black text-base transition-all hover:scale-105 active:scale-95">
+              <Button 
+                onClick={handleSave}
+                className="bg-indigo-600 rounded-xl px-12 py-4 shadow-xl shadow-indigo-100 normal-case font-black text-base transition-all hover:scale-105 active:scale-95"
+              >
                 Save Changes
               </Button>
             </div>

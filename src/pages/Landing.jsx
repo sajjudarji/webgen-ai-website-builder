@@ -16,6 +16,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/outline";
 import Logo from "../assets/Logo-2.png";
+import PublicNavbar from "../components/PublicNavbar";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -53,33 +54,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      {/* Navbar */}
-      <nav className="fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md z-[100] border-b border-gray-100">
-        <div className="max-w-screen-xl mx-auto h-full px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-10 px-6 my-3 flex items-center gap-2">
-              <img src={Logo} className="h-36 w-36" />
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-500">
-            <Link to="#" className="hover:text-indigo-600 transition-colors">
-              Features
-            </Link>
-            <Link to="#" className="hover:text-indigo-600 transition-colors">
-              Pricing
-            </Link>
-
-            <Button
-              size="sm"
-              className="bg-indigo-600 rounded-lg shadow-lg shadow-indigo-100 normal-case px-6"
-              onClick={() => navigate("/register")}
-            >
-              Get Started
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Hero Section */}
       <section className="pt-40 pb-20 px-6">
@@ -280,7 +255,7 @@ const Landing = () => {
               <ul className="space-y-4 text-sm font-bold text-gray-500">
                 <li>
                   <Link
-                    to="#"
+                    to="/about"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Features
@@ -288,7 +263,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/templates"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Templates
@@ -296,7 +271,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/pricing"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Pricing
@@ -304,7 +279,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/showcase"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Showcase
@@ -320,7 +295,7 @@ const Landing = () => {
               <ul className="space-y-4 text-sm font-bold text-gray-500">
                 <li>
                   <Link
-                    to="#"
+                    to="/about"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     About Us
@@ -328,7 +303,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/careers"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Careers
@@ -336,7 +311,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/press"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Press
@@ -344,7 +319,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/contact"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Contact
@@ -360,7 +335,7 @@ const Landing = () => {
               <ul className="space-y-4 text-sm font-bold text-gray-500">
                 <li>
                   <Link
-                    to="#"
+                    to="/help"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Help Center
@@ -368,7 +343,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/privacy"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Privacy Policy
@@ -376,7 +351,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/terms"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Terms of Service
@@ -384,7 +359,7 @@ const Landing = () => {
                 </li>
                 <li>
                   <Link
-                    to="#"
+                    to="/status"
                     className="hover:text-indigo-600 transition-colors"
                   >
                     Status

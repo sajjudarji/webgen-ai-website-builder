@@ -4,7 +4,7 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api/auth";
 
 // Get user from localStorage
-const user = JSON.parse(localStorage.getItem("user"));
+const user = JSON.parse(sessionStorage.getItem("user"));
 
 const initialState = {
   user: user ? user : null,
@@ -21,7 +21,7 @@ export const register = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
       if (response.data.success) {
-        localStorage.setItem("user", JSON.stringify(response.data.data));
+        sessionStorage.setItem("user", JSON.stringify(response.data.data));
       }
       return response.data.data;
     } catch (error) {
@@ -39,7 +39,7 @@ export const login = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/login`, userData);
       if (response.data.success) {
-        localStorage.setItem("user", JSON.stringify(response.data.data));
+        sessionStorage.setItem("user", JSON.stringify(response.data.data));
       }
       return response.data.data;
     } catch (error) {
@@ -52,7 +52,7 @@ export const login = createAsyncThunk(
 
 // Logout user
 export const logout = createAsyncThunk("auth/logout", async () => {
-  localStorage.removeItem("user");
+  sessionStorage.removeItem("user");
 });
 
 export const authSlice = createSlice({

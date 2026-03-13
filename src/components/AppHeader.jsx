@@ -15,6 +15,7 @@ import {
   BellIcon,
   Squares2X2Icon,
   ChevronRightIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { logout } from "../store/authSlice";
 
@@ -126,6 +127,13 @@ const AppHeader = () => {
             >
               <Squares2X2Icon className="h-4 w-4 text-gray-400" />
               <span className="font-bold text-sm text-gray-700">Dashboard</span>
+            </MenuItem>
+            <MenuItem
+              className="rounded-xl py-3 flex items-center gap-3"
+              onClick={() => navigate("/about")}
+            >
+              <InformationCircleIcon className="h-4 w-4 text-gray-400" />
+              <span className="font-bold text-sm text-gray-700">About Platform</span>
             </MenuItem>
             <hr className="my-2 border-gray-50" />
             <MenuItem
