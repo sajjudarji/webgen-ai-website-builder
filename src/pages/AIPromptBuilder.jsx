@@ -212,7 +212,9 @@ const AIPromptBuilder = () => {
   const [glassBlur, setGlassBlur] = useState(12);
   const [panelOpacity, setPanelOpacity] = useState(40);
   const [primaryColor, setPrimaryColor] = useState("#5046e5");
-  const [selectedModel, setSelectedModel] = useState("gemini-2.0-flash");
+  const [selectedModel, setSelectedModel] = useState(
+    "nvidia/nemotron-3-super:free",
+  );
   const [viewport, setViewport] = useState("desktop");
   const [showFullPreview, setShowFullPreview] = useState(false);
   const { user } = useSelector((state) => state.auth);
@@ -221,6 +223,7 @@ const AIPromptBuilder = () => {
   const modelLabels = {
     "gemini-1.5-flash": "Gemini 1.5 Flash",
     "gemini-1.5-pro": "Gemini 1.5 Pro",
+    "nvidia/nemotron-3-super:free": "Nemotron 3 Super",
     "gpt-4o": "GPT-4o (Coming Soon)",
   };
 
@@ -307,7 +310,7 @@ const AIPromptBuilder = () => {
       ]);
 
       const payload = {
-        businessName: userPrompt.split(' ').slice(0, 3).join(' '),
+        businessName: userPrompt.split(" ").slice(0, 3).join(" "),
         description: userPrompt,
         colorPreference: primaryColor,
         layoutStyle: "creative",
@@ -391,7 +394,7 @@ const AIPromptBuilder = () => {
           style={panelStyle}
         >
           <div className="flex  justify-between mb-4">
-            <p className="text-gray-900 font-black text-lg">Architect GPT</p>
+            <p className="text-gray-900 font-black text-lg">Architect</p>
             <Menu placement="bottom-end">
               <MenuHandler>
                 <div className="px-3 py-1.5 cursor-pointer bg-indigo-100/50 text-indigo-600 rounded-lg border border-indigo-100 flex items-center justify-between shadow-sm outline-none min-w-[130px]">
@@ -403,16 +406,12 @@ const AIPromptBuilder = () => {
               </MenuHandler>
               <MenuList className="p-1 min-w-[150px] border-white/50 bg-white/90 backdrop-blur-xl shadow-xl z-[9999]">
                 <MenuItem
-                  onClick={() => setSelectedModel("gemini-1.5-flash")}
+                  onClick={() =>
+                    setSelectedModel("nvidia/nemotron-3-super:free")
+                  }
                   className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600"
                 >
-                  Gemini 1.5 Flash
-                </MenuItem>
-                <MenuItem
-                  onClick={() => setSelectedModel("gemini-1.5-pro")}
-                  className="flex items-center gap-2 text-[11px] font-bold text-gray-800 hover:bg-indigo-50 hover:text-indigo-600"
-                >
-                  Gemini 1.5 Pro
+                  Nemotron 3 super
                 </MenuItem>
                 <MenuItem
                   disabled

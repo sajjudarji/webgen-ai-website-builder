@@ -1,10 +1,8 @@
-import React from "react";
-import Heroimg from "../assets/Heroimg.jpg";
+import React, { Suspense, useRef, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Typography,
   Button,
-  IconButton,
   Card,
   CardBody,
 } from "@material-tailwind/react";
@@ -13,42 +11,79 @@ import {
   CursorArrowRaysIcon,
   RocketLaunchIcon,
   ArrowRightIcon,
-  PlayIcon,
+  CpuChipIcon,
+  CubeIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import Logo from "../assets/Logo-2.png";
+import { motion, useMotionValue, useTransform, useInView, useSpring, animate } from "framer-motion";
 import PublicNavbar from "../components/PublicNavbar";
+import Logo from "../assets/Logo-2.png";
+
+// --- Animated Counter Component ---
+const AnimatedCounter = ({ value, suffix = "" }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.floor(latest).toLocaleString() + suffix);
+  
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(count, parseFloat(value.replace(/[^0-9.]/g, "")), {
+        duration: 2,
+        ease: "easeOut",
+      });
+      return controls.stop;
+    }
+  }, [isInView, value, count]);
+
+  return <motion.span ref={ref}>{rounded}</motion.span>;
+};
 
 const Landing = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { label: "Websites Built", value: "500k+", trend: "↑ 12%" },
-    { label: "Active Users", value: "100k+", trend: "↑ 8%" },
-    { label: "User Rating", value: "4.9/5", trend: "+ 0.1%" },
-    { label: "Global Teams", value: "24", trend: "NEW COUNT" },
+    { label: "PROJECTS CREATED", value: "500k+", trend: "↑ 12%" },
+    { label: "GLOBAL DEVELOPERS", value: "100k+", trend: "↑ 8%" },
+    { label: "CLIENT SATISFACTION", value: "4.9/5", trend: "+ 0.1%" },
   ];
 
   const features = [
     {
-      title: "AI Generation",
-      description:
-        "Describe your business and watch as our AI generates a complete professional website in seconds.",
+      title: "Instant Scaffolding",
+      description: "Describe your vision in natural language. Our engine builds accessible React components styled with Tailwind CSS instantly.",
       icon: SparklesIcon,
-      color: "bg-indigo-50 text-indigo-600",
+      color: "text-blue-600 bg-blue-50",
     },
     {
-      title: "Drag & Drop Editor",
-      description:
-        "Customize every detail with our intuitive visual editor. Move elements, change colors, and swap images with ease.",
-      icon: CursorArrowRaysIcon,
-      color: "bg-purple-50 text-purple-600",
+      title: "Smart Theming",
+      description: "Generate coherent design systems, typography scales, and color palettes that align with your brand's unique identity.",
+      icon: CpuChipIcon,
+      color: "text-purple-600 bg-purple-50",
     },
     {
-      title: "SEO Optimization",
-      description:
-        "We built SiteFlow with lightning-fast performance and global hosting. Your site is automatically optimized for SEO.",
+      title: "Edge Deployment",
+      description: "Optimized for performance. Export clean code or deploy directly to a global edge network for blazing fast user experiences.",
       icon: RocketLaunchIcon,
-      color: "bg-blue-50 text-blue-600",
+      color: "text-green-600 bg-green-50",
+    },
+    {
+      title: "Live Collaboration",
+      description: "Multiplayer editing for teams. Work together in a shared canvas where AI components stay synced across every project.",
+      icon: CursorArrowRaysIcon,
+      color: "text-yellow-600 bg-yellow-50",
+    },
+    {
+      title: "Design Tokens",
+      description: "Single source-of-truth style variables that automatically propagate updates across your entire library and codebase.",
+      icon: CubeIcon,
+      color: "text-indigo-600 bg-indigo-50",
+    },
+    {
+      title: "Enterprise Grade",
+      description: "Security-first infrastructure with SOC2 compliance, SSO, and granular permissions for large engineering teams.",
+      icon: ShieldCheckIcon,
+      color: "text-pink-600 bg-pink-50",
     },
   ];
 
@@ -57,148 +92,201 @@ const Landing = () => {
       <PublicNavbar />
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 px-6">
-        <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
-              <SparklesIcon className="h-4 w-4" /> Power By AI Generative
+      <section className="pt-32 pb-20 px-6 overflow-hidden">
+        <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-8">
+              <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse"></span>
+              V1.0 Platform is Live
             </div>
             <Typography
               variant="h1"
-              className="text-gray-900 text-5xl lg:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight"
+              className="text-gray-900 text-6xl lg:text-[5.5rem] font-bold leading-[1] mb-8 tracking-tight"
             >
-              Build your dream website in{" "}
-              <span className="text-indigo-600">minutes</span> with AI
+              Design <br />
+              <span className="text-gray-900/40">Interfaces</span> <br />
+              with Intelligence.
             </Typography>
-            <Typography className="text-gray-500 text-lg lg:text-xl font-medium max-w-xl mb-10 leading-relaxed">
-              Join over 100,000 creators using SiteFlow to build professional
-              websites in seconds. No coding, no design skills required.
+            <Typography className="text-gray-500 text-lg lg:text-xl font-medium max-w-lg mb-12 leading-relaxed opacity-80">
+              The high-end AI engine for premium product teams. Generate, iterate, and ship high-fidelity components using the most advanced models.
             </Typography>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <Button
                 size="lg"
-                className="bg-indigo-600 rounded-2xl shadow-xl shadow-indigo-100 normal-case px-10 py-4 text-base font-bold flex items-center gap-2 group"
+                className="bg-indigo-600 rounded-xl px-10 py-4 text-sm font-bold normal-case shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all hover:-translate-y-0.5"
                 onClick={() => navigate("/register")}
               >
-                Get Started For Now{" "}
-                <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                Get Started Free
               </Button>
-              <button className="flex items-center gap-2 text-gray-900 font-bold hover:text-indigo-600 transition-colors text-lg px-6">
-                <div className="w-10 h-10 border border-gray-100 rounded-full flex items-center justify-center shadow-sm">
-                  <PlayIcon className="h-4 w-4 fill-gray-900" />
-                </div>
-                View Demo
-              </button>
+              <Button
+                variant="text"
+                size="lg"
+                className="text-gray-500 font-bold border border-gray-100 rounded-xl px-10 py-4 text-sm normal-case hover:bg-gray-50 bg-white"
+              >
+                View Docs
+              </Button>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 bg-indigo-500/10 blur-3xl rounded-full"></div>
-            <Card className="relative rounded-[2.5rem] border border-gray-100 shadow-2xl shadow-indigo-100/50 overflow-hidden">
-              <div className="h-[450px] bg-gray-50 p-8 flex flex-col gap-6">
-                {/* New Hero Image */}
-                <div className="absolute inset-0 w-full h-full">
-                  <img
-                    src={Heroimg}
-                    alt="Hero"
-                    className="w-full h-full object-cover transform transition-transform duration-1000 "
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/40 via-transparent to-transparent"></div>
-                </div>
+          {/* Right Side: Futuristic Orbital Animation (CSS/SVG Version for Stability) */}
+          <div className="relative h-[600px] flex items-center justify-center">
+            {/* Orbital Design Layers */}
+            <div className="absolute inset-0 z-0">
+               <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Rotating Outer Ring */}
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute w-[500px] h-[500px] border border-indigo-100/50 rounded-full"
+                  >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-indigo-400 rounded-full shadow-[0_0_15px_rgba(129,140,248,0.8)]"></div>
+                  </motion.div>
 
-                {/* Floating Elements on Image */}
-                <div className="relative z-10 w-full flex flex-col gap-4 mt-auto">
-                  <div className="bg-white/20 backdrop-blur-xl border border-white/30 p-4 rounded-2xl max-w-[200px] shadow-2xl">
-                    <div className="flex gap-1 mb-2">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <div
-                          key={i}
-                          className="w-2 h-2 bg-yellow-400 rounded-full"
-                        ></div>
-                      ))}
-                    </div>
-                    <Typography className="text-white text-[10px] font-bold leading-tight uppercase tracking-widest">
-                      Live Preview
-                    </Typography>
-                    <Typography className="text-white text-xs font-black">
-                      Modern Furniture Site
-                    </Typography>
+                  {/* Middle Ring */}
+                  <motion.div 
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    className="absolute w-[350px] h-[350px] border border-indigo-50/50 rounded-full"
+                  >
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full shadow-[0_0_12px_rgba(192,132,252,0.8)]"></div>
+                  </motion.div>
+
+                  {/* Inner Ring */}
+                  <div className="absolute w-[200px] h-[200px] border border-gray-100 rounded-full flex items-center justify-center">
+                     <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full blur-2xl opacity-20 animate-pulse"></div>
                   </div>
-                </div>
-              </div>
-            </Card>
+
+                  {/* Central Glow */}
+                  <div className="absolute w-[450px] h-[450px] bg-indigo-50 rounded-full blur-[100px] opacity-30"></div>
+               </div>
+            </div>
+
+            {/* Floating Particle Dot Field (CSS) */}
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-indigo-400 rounded-full opacity-40 shadow-[0_0_8px_rgba(99,102,241,0.5)]"
+                  initial={{ 
+                    x: Math.random() * 500 - 250 + 300, 
+                    y: Math.random() * 500 - 250 + 300 
+                  }}
+                  animate={{ 
+                    y: [0, -40, 0],
+                    opacity: [0.2, 0.6, 0.2]
+                  }}
+                  transition={{ 
+                    duration: 3 + Math.random() * 4, 
+                    repeat: Infinity,
+                    delay: Math.random() * 5
+                  }}
+                  style={{
+                    left: "25%",
+                    top: "25%"
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Floating Glass UI elements */}
+            <motion.div 
+               animate={{ y: [0, -15, 0] }}
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute top-1/4 right-0 z-20 bg-white/80 backdrop-blur-xl border border-gray-100 p-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[200px] ring-1 ring-black/5"
+            >
+               <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center shadow-inner">
+                  <div className="w-3 h-3 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+               </div>
+               <div className="flex-1 space-y-2">
+                  <div className="h-2 w-full bg-gray-200 rounded-full"></div>
+                  <div className="h-2 w-2/3 bg-gray-100 rounded-full"></div>
+               </div>
+            </motion.div>
+
+            <motion.div 
+               animate={{ y: [0, 15, 0] }}
+               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute bottom-1/4 left-0 z-20 bg-white/80 backdrop-blur-xl border border-gray-100 p-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[200px] ring-1 ring-black/5"
+            >
+               <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shadow-inner">
+                  <SparklesIcon className="h-5 w-5" />
+               </div>
+               <div className="flex-1 space-y-2">
+                  <div className="h-2 w-full bg-gray-200 rounded-full"></div>
+                  <div className="h-2 w-1/2 bg-gray-100 rounded-full"></div>
+               </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 border-y border-gray-50 bg-gray-50/30">
+      <section className="py-24 border-y border-gray-50 bg-[#fafafa]/50">
         <div className="max-w-screen-xl mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
             {stats.map((stat) => (
-              <div key={stat.label}>
-                <Typography
-                  variant="small"
-                  className="text-gray-400 font-bold uppercase tracking-widest mb-2"
-                >
-                  {stat.label}
-                </Typography>
+              <div key={stat.label} className="group">
                 <Typography
                   variant="h2"
-                  className="text-gray-900 font-black mb-1 leading-none"
+                  className="text-gray-900 text-6xl font-bold mb-4 tracking-tighter"
                 >
-                  {stat.value}
+                  <AnimatedCounter value={stat.value} suffix={stat.value.includes("+") ? "+" : ""} />
                 </Typography>
-                <Typography
-                  variant="small"
-                  className="text-green-500 font-bold"
-                >
-                  {stat.trend}
-                </Typography>
+                <div className="flex flex-col items-center gap-2">
+                   <Typography className="text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                     {stat.label}
+                   </Typography>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-32 px-6">
-        <div className="max-w-screen-xl mx-auto text-center mb-20 whitespace-normal">
-          <Typography
-            variant="h2"
-            className="text-gray-900 text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight"
-          >
-            Powerful Features for Modern Creators
-          </Typography>
-          <Typography className="text-gray-500 text-lg font-medium max-w-2xl mx-auto leading-relaxed">
-            Everything you need to launch your online presence in minutes,
-            powered by next-generation artificial intelligence.
-          </Typography>
-        </div>
+      {/* Features Heading */}
+      <section className="pt-32 pb-20 px-6 text-center">
+         <div className="max-w-screen-xl mx-auto">
+            <Typography variant="h2" className="text-gray-900 text-5xl font-bold mb-6 tracking-tight">
+               The future of design is prompt-based.
+            </Typography>
+            <Typography className="text-gray-500 text-lg max-w-2xl mx-auto font-medium opacity-80">
+               WebGen AI removes the friction between idea and implementation, delivering production-ready assets in milliseconds.
+            </Typography>
+         </div>
+      </section>
 
+      {/* Features Grid */}
+      <section className="pb-32 px-6">
         <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature) => (
-            <Card
+          {features.map((feature, idx) => (
+            <motion.div
               key={feature.title}
-              className="shadow-none border border-gray-100 rounded-[2rem] p-4 group hover:border-indigo-100 hover:shadow-2xl hover:shadow-indigo-50 transition-all"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              viewport={{ once: true }}
             >
-              <CardBody className="p-8">
-                <div
-                  className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-8 border border-white group-hover:scale-110 transition-transform`}
-                >
-                  <feature.icon className="h-7 w-7" />
-                </div>
-                <Typography
-                  variant="h4"
-                  className="text-gray-900 font-bold mb-4 tracking-tight"
-                >
-                  {feature.title}
-                </Typography>
-                <Typography className="text-gray-500 font-medium leading-relaxed">
-                  {feature.description}
-                </Typography>
-              </CardBody>
-            </Card>
+               <Card className="h-full shadow-none border border-gray-100/50 rounded-3xl p-6 group hover:border-gray-200 hover:bg-gray-50/30 transition-all duration-300">
+                  <CardBody className="p-4">
+                     <div className={`w-10 h-10 ${feature.color} rounded-xl flex items-center justify-center mb-8 border border-white shadow-sm ring-4 ring-gray-50`}>
+                        <feature.icon className="h-5 w-5" />
+                     </div>
+                     <Typography
+                        variant="h5"
+                        className="text-gray-900 font-bold mb-4 tracking-tight"
+                     >
+                        {feature.title}
+                     </Typography>
+                     <Typography className="text-gray-500 text-sm font-medium leading-relaxed opacity-70">
+                        {feature.description}
+                     </Typography>
+                  </CardBody>
+               </Card>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -206,181 +294,71 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="py-20 px-6">
         <div className="max-w-screen-xl mx-auto">
-          <Card className="bg-indigo-600 rounded-[3rem] p-12 lg:p-20 text-center relative overflow-hidden shadow-2xl shadow-indigo-200">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] -mr-48 -mt-48 rounded-full"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400/20 blur-[100px] -ml-48 -mb-48 rounded-full"></div>
-            <div className="relative z-10">
-              <Typography
-                variant="h2"
-                className="text-white text-4xl lg:text-6xl font-extrabold mb-6 tracking-tight"
-              >
-                Ready to build your dream website?
-              </Typography>
-              <Typography className="text-indigo-100 text-lg font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
-                Start your today for free through our next generation creator
-                platform. Everything you need is already here.
-              </Typography>
-              <Button
-                size="lg"
-                className="bg-white text-indigo-600 rounded-2xl px-12 py-5 text-base font-black normal-case shadow-xl shadow-black/10 hover:scale-105 transition-transform"
-                onClick={() => navigate("/register")}
-              >
-                Get Started For Now
-              </Button>
-            </div>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <Card className="bg-gradient-to-br from-indigo-500/90 to-purple-600 rounded-[2.5rem] p-16 lg:p-24 text-center relative overflow-hidden shadow-2xl shadow-indigo-200">
+               {/* Orbital circle in CTA */}
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/10 rounded-full"></div>
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full"></div>
+               
+               <div className="relative z-10">
+                  <Typography
+                     variant="h2"
+                     className="text-white text-5xl lg:text-7xl font-bold mb-8 tracking-tight max-w-4xl mx-auto"
+                  >
+                     Build the future of the <br /> 
+                     <span className="opacity-80">web, faster than ever.</span>
+                  </Typography>
+                  <Typography className="text-indigo-100 text-lg font-medium mb-12 max-w-2xl mx-auto opacity-90">
+                     Join 500,000+ creators and engineers building high-end interfaces with WebGen AI.
+                  </Typography>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                     <Button
+                        size="lg"
+                        className="bg-white text-indigo-600 rounded-2xl px-12 py-5 text-sm font-black normal-case shadow-xl hover:bg-gray-50 transform hover:scale-105 transition-all"
+                        onClick={() => navigate("/register")}
+                     >
+                        Start Building Now
+                     </Button>
+                     <Button
+                        size="lg"
+                        variant="text"
+                        className="bg-white/10 text-white border border-white/20 rounded-2xl px-12 py-5 text-sm font-bold normal-case hover:bg-white/20"
+                     >
+                        Contact Sales
+                     </Button>
+                  </div>
+               </div>
+            </Card>
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="pt-20 pb-10 border-t border-gray-100">
+      <footer className="pt-20 pb-10 border-t border-gray-50 bg-[#fafafa]/30">
         <div className="max-w-screen-xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-            <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-10 px-6 my-3 flex items-center gap-2">
-                  <img src={Logo} className="h-36 w-36" />
-                </div>
-              </div>
-              <Typography className="text-gray-500 text-sm font-medium leading-relaxed">
-                The world's most advanced AI-powered website builder.
-                Personalized experiences for modern creators.
-              </Typography>
-            </div>
-
-            <div>
-              <Typography className="text-gray-900 font-bold mb-6">
-                Product
-              </Typography>
-              <ul className="space-y-4 text-sm font-bold text-gray-500">
-                <li>
-                  <Link
-                    to="/about"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/templates"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Templates
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/pricing"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/showcase"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Showcase
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <Typography className="text-gray-900 font-bold mb-6">
-                Company
-              </Typography>
-              <ul className="space-y-4 text-sm font-bold text-gray-500">
-                <li>
-                  <Link
-                    to="/about"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/careers"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/press"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Press
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <Typography className="text-gray-900 font-bold mb-6">
-                Support
-              </Typography>
-              <ul className="space-y-4 text-sm font-bold text-gray-500">
-                <li>
-                  <Link
-                    to="/help"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/privacy"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/terms"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/status"
-                    className="hover:text-indigo-600 transition-colors"
-                  >
-                    Status
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-gray-100 pb-10 mb-10 text-gray-500 font-bold text-xs uppercase tracking-widest">
+             <div className="flex items-center gap-2">
+                <img src={Logo} className="h-8 w-auto grayscale opacity-50" alt="Logo" />
+                <span>WebGen AI</span>
+             </div>
+             <div className="flex gap-10">
+                <Link to="/about" className="hover:text-indigo-600 transition-colors">Platform</Link>
+                <Link to="/templates" className="hover:text-indigo-600 transition-colors">Showcase</Link>
+                <Link to="/pricing" className="hover:text-indigo-600 transition-colors">Pricing</Link>
+                <Link to="/enterprise" className="hover:text-indigo-600 transition-colors">Enterprise</Link>
+             </div>
           </div>
 
-          <div className="pt-10 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center text-[12px] font-bold text-gray-400 gap-4 uppercase tracking-widest">
-            <div>© 2024 Platform Inc. All rights reserved.</div>
+          <div className="flex flex-col md:flex-row justify-between items-center text-[10px] font-black text-gray-400 gap-4 uppercase tracking-[0.2em]">
+            <div>© 2024 WebGen AI Inc. Handcrafted for the next generation.</div>
             <div className="flex gap-8">
-              <Link to="#" className="hover:text-gray-900 transition-colors">
-                Privacy
-              </Link>
-              <Link to="#" className="hover:text-gray-900 transition-colors">
-                Terms
-              </Link>
-              <Link to="#" className="hover:text-gray-900 transition-colors">
-                English
-              </Link>
+               <Link to="#" className="hover:text-gray-900 transition-colors">Twitter</Link>
+               <Link to="#" className="hover:text-gray-900 transition-colors">Discord</Link>
+               <Link to="#" className="hover:text-gray-900 transition-colors">GitHub</Link>
             </div>
           </div>
         </div>

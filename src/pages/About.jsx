@@ -183,14 +183,13 @@ const About = () => {
               Ready to build the future?
             </Typography>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Button
-                size="lg"
-                className="bg-white text-indigo-600 rounded-2xl px-12 py-5 font-black uppercase text-xs tracking-widest"
+              <button
+                className="flex justify-center items-center gap-2 bg-white text-indigo-600 rounded-2xl px-12 py-5 font-black uppercase text-xs tracking-widest"
                 onClick={() => navigate("/register")}
               >
                 Join Us now{" "}
                 <ArrowRightIcon className="h-4 w-4 text-indigo-300" />
-              </Button>
+              </button>
               <Button
                 size="lg"
                 variant="outlined"

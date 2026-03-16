@@ -19,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { register, reset } from "../store/authSlice";
 import toast from "react-hot-toast";
+import Logo from "../assets/logo-2.png";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -63,22 +64,16 @@ const Register = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50 flex items-center justify-center p-4 lg:p-8 font-sans overflow-hidden fixed inset-0">
+    <div className="h-full w-full bg-gray-50 flex items-center justify-center p-4 py-10  lg:p-8 font-sans overflow-hidden fixed inset-0">
       <div className="max-w-6xl w-full bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:flex-row h-full max-h-[720px]">
         {/* Left Side: Form */}
         <div className="w-full lg:w-[50%] flex flex-col justify-center px-8 sm:px-12 lg:px-16 py-6 relative overflow-hidden">
           <div className=" mx-auto w-full">
             {/* Logo */}
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-100">
-                <SparklesIcon className="h-4 w-4" />
+              <div className="h-10  my-3 flex items-center gap-2">
+                <img src={Logo} className="h-36 w-36" />
               </div>
-              <Typography
-                variant="h6"
-                className="text-gray-900 font-extrabold tracking-tight text-sm"
-              >
-                SiteFlow AI
-              </Typography>
             </div>
 
             <div className="mb-4">
@@ -248,7 +243,7 @@ const Register = () => {
               </Button>
             </form>
 
-            <Typography className="text-center mt-6 text-gray-400 font-bold text-[12px]">
+            <Typography className="text-center my-3 text-gray-400 font-bold text-[12px]">
               Already have an account?{" "}
               <Link
                 to="/login"

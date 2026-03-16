@@ -8,16 +8,16 @@ import LeftPanel from "../builder/LeftPanel";
 import RightPanel from "../builder/RightPanel";
 import Canvas from "../builder/Canvas";
 import AIAssistant from "../ai/AIAssistant";
-import { 
-  toggleLeftPanel, 
-  toggleRightPanel, 
-  setIsPreview 
+import {
+  toggleLeftPanel,
+  toggleRightPanel,
+  setIsPreview,
 } from "../store/builderSlice";
-import { 
-  ChevronLeftIcon, 
-  ChevronRightIcon, 
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   Bars3Icon,
-  AdjustmentsVerticalIcon
+  AdjustmentsVerticalIcon,
 } from "@heroicons/react/24/outline";
 import { IconButton } from "@material-tailwind/react";
 import toast from "react-hot-toast";
@@ -27,12 +27,12 @@ const Builder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { 
-    currentWebsite, 
-    currentPage, 
+  const {
+    currentWebsite,
+    currentPage,
     isPreview,
     leftPanelCollapsed,
-    rightPanelCollapsed
+    rightPanelCollapsed,
   } = useSelector((state) => state.builder);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -67,7 +67,7 @@ const Builder = () => {
             name: currentPage.name,
             slug: currentPage.slug,
           },
-          config
+          config,
         );
 
         setLastSavedLayoutStr(currentLayoutStr);
@@ -140,11 +140,10 @@ const Builder = () => {
       })();
 
       toast.promise(savePromise, {
-        loading: 'Syncing your changes...',
-        success: 'Project saved successfully!',
-        error: 'Cloud sync failed. Please try again.',
+        loading: "Syncing your changes...",
+        success: "Project saved successfully!",
+        error: "Cloud sync failed. Please try again.",
       });
-
     } catch (error) {
       console.error("Error saving website:", error);
       toast.error("An unexpected error occurred.");
@@ -173,21 +172,29 @@ const Builder = () => {
       <div className="flex flex-1 overflow-hidden relative">
         {/* Left Panel with Collapse Logic */}
         {!isPreview && (
-          <div className={`${leftPanelCollapsed ? "w-0 overflow-hidden" : "w-[300px]"} transition-all duration-500 ease-in-out border-r border-gray-100 shrink-0`}>
-             <LeftPanel />
+          <div
+            className={`${leftPanelCollapsed ? "w-0 overflow-hidden" : "w-[300px]"} transition-all duration-500 ease-in-out border-r border-gray-100 shrink-0`}
+          >
+            <LeftPanel />
           </div>
         )}
 
         {/* Floating Toggle for Left Panel */}
         {!isPreview && (
-          <div className={`absolute left-0 top-4 z-[60] transition-all duration-500 ${leftPanelCollapsed ? "translate-x-0" : "translate-x-[290px]"}`}>
+          <div
+            className={`absolute left-0 top-4 z-[60] transition-all duration-500 ${leftPanelCollapsed ? "translate-x-0" : "translate-x-[290px]"}`}
+          >
             <IconButton
               size="sm"
               variant="white"
               onClick={() => dispatch(toggleLeftPanel())}
               className="rounded-full shadow-2xl border border-gray-100 hover:scale-110 active:scale-95 bg-white text-indigo-600"
             >
-              {leftPanelCollapsed ? <Bars3Icon className="h-4 w-4 stroke-[3]" /> : <ChevronLeftIcon className="h-4 w-4 stroke-[3]" />}
+              {leftPanelCollapsed ? (
+                <Bars3Icon className="h-4 w-4 stroke-[3]" />
+              ) : (
+                <ChevronLeftIcon className="h-4 w-4 stroke-[3]" />
+              )}
             </IconButton>
           </div>
         )}
@@ -197,26 +204,34 @@ const Builder = () => {
 
         {/* Floating Toggle for Right Panel */}
         {!isPreview && (
-          <div className={`absolute right-0 top-4 z-[60] transition-all duration-500 ${rightPanelCollapsed ? "translate-x-0" : "-translate-x-[330px]"}`}>
-             <IconButton
-               size="sm"
-               variant="white"
-               onClick={() => dispatch(toggleRightPanel())}
-               className="rounded-full shadow-2xl border border-gray-100 hover:scale-110 active:scale-95 bg-white text-indigo-600"
-             >
-               {rightPanelCollapsed ? <AdjustmentsVerticalIcon className="h-4 w-4 stroke-[3]" /> : <ChevronRightIcon className="h-4 w-4 stroke-[3]" />}
-             </IconButton>
+          <div
+            className={`absolute right-0 top-4 z-[60] transition-all duration-500 ${rightPanelCollapsed ? "translate-x-0" : "-translate-x-[330px]"}`}
+          >
+            <IconButton
+              size="sm"
+              variant="white"
+              onClick={() => dispatch(toggleRightPanel())}
+              className="rounded-full shadow-2xl border border-gray-100 hover:scale-110 active:scale-95 bg-white text-indigo-600"
+            >
+              {rightPanelCollapsed ? (
+                <AdjustmentsVerticalIcon className="h-4 w-4 stroke-[3]" />
+              ) : (
+                <ChevronRightIcon className="h-4 w-4 stroke-[3]" />
+              )}
+            </IconButton>
           </div>
         )}
 
         {/* Right Panel with Collapse Logic */}
         {!isPreview && (
-          <div className={`${rightPanelCollapsed ? "w-0 overflow-hidden" : "w-[340px]"} transition-all duration-500 ease-in-out border-l border-gray-100 shrink-0`}>
+          <div
+            className={`${rightPanelCollapsed ? "w-0 overflow-hidden" : "w-[340px]"} transition-all duration-500 ease-in-out border-l border-gray-100 shrink-0`}
+          >
             <RightPanel />
           </div>
         )}
-        
-        {!isPreview && <AIAssistant />}
+
+        {/* {!isPreview && <AIAssistant />} */}
       </div>
     </div>
   );

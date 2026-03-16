@@ -116,7 +116,7 @@ const AIAssistant = () => {
             </IconButton>
           </div>
 
-          <div className="p-8 space-y-6 bg-red-500">
+          <div className="p-8 space-y-6">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
                 <BeakerIcon className="h-4 w-4 text-indigo-500" /> Choose Model
